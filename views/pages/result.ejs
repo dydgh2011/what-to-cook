@@ -1,0 +1,19 @@
+<%- include('header') %>
+<div class="main-text my-md-4 my-3 lh-sm main-container">
+  <% if (error) { %>
+    <div class="error-message text-center">--ERROR--</div>
+    <div class="error-message-des text-center">잘못된 입력값이거나 AI 가 지금 아픈 거 같아요...</div>
+  <% } else { %>
+    <div class="result-text text-center mx-4">
+      오늘은
+      <span class="result-text-main underline"><%- result %></span>
+      이(가) 좋겠다!
+    </div>
+    <div class="result-links-container mx-auto mb-5 mt-3 p-md-5 p-3">
+      <% for( let index = 0; index < datas.length; index++ ) { %>
+        <%- include('../components/recipe-container.ejs', {data: datas[index]}) %>
+      <% } %>
+    </div>
+  <% } %>
+</div>
+<%- include('footer') %>

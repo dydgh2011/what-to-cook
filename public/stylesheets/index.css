@@ -1,0 +1,728 @@
+@charset "UTF-8";
+/* FIXME: fonts for mac and windows might differently */
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff')
+    format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroM.woff')
+    format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroL.woff')
+    format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'GmarketSansMedium';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+:root {
+  --snow: #f7f0f0;
+  --black: #000000;
+  --dark-olivine: #6ca25e;
+  --olivine: #8cba80;
+  --light-olivine: #b0d4a7;
+  --dark-steel-blue: #306093;
+  --steel-blue: #4f7cacff;
+  --light-steel-blue: #6f9ac8;
+  --gray: #757780ff;
+  --red-orange: #f78154;
+  --orange: #f39237;
+  --yellow-orange: #f3a738;
+  --navbar-height: 66.3px;
+}
+
+* {
+  font-family: 'GmarketSansMedium';
+  margin: 0px;
+  padding: 0px;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  background-color: var(--snow);
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.navbar {
+  border-bottom: 8px solid var(--olivine);
+  background-color: var(--snow);
+  color: var(--snow);
+  font-weight: 700;
+}
+
+.nav-link {
+  font-family: 'SBAggroB';
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.logIn {
+  background-color: var(--olivine);
+  padding: 6px;
+  border-radius: 5px;
+  color: var(--snow);
+  border: 2px solid var(--dark-olivine);
+}
+
+.signUp {
+  background-color: var(--light-olivine);
+  color: var(--snow);
+  padding: 6px;
+  border-radius: 5px;
+  border: 2px solid var(--olivine);
+}
+
+#brand {
+  font-family: 'SBAggroB';
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.main-container {
+  min-height: calc(
+    100vh - var(--navbar-height) - var(--main-container-margin-top)
+  );
+}
+
+#footer {
+  background-color: var(--dark-olivine);
+}
+
+#footer * {
+  font-family: 'SBAggroB';
+  color: var(--snow);
+}
+
+#footer-icon {
+  color: var(--snow);
+  font-size: 2rem;
+}
+
+#footer-list {
+  font-weight: 300;
+}
+
+.donation-text {
+  font-size: 2rem !important;
+}
+
+#footer-donation {
+  border-radius: 5px;
+  border: 3px solid var(--snow);
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+h5 {
+  font-weight: 700;
+}
+
+#copyright {
+  font-weight: 500;
+}
+
+.bmc-btn-container {
+  border-radius: 15px;
+  border: 5px solid var(--snow);
+  background-color: var(--yellow-orange);
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+  color: black !important;
+}
+
+.bmc-btn-container:hover {
+  background-color: var(--yellow-orange);
+  border: 5px solid var(--snow);
+  transition: transform 0.3s ease;
+  transform: scale(1.1);
+  color: black !important;
+}
+
+.bmc-btn-container:active,
+.bmc-btn-container:focus {
+  background-color: var(--yellow-orange) !important;
+  border: 5px solid var(--snow) !important;
+  color: black !important;
+}
+
+.donation-icon {
+  width: 31.50329px;
+  height: 45.58px;
+  margin-right: 10px;
+}
+
+.description {
+  font-family: 'GmarketSansMedium' !important;
+  font-weight: 300;
+  color: var(--snow);
+}
+
+textarea {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: inherit;
+  font-family: inherit;
+  background: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  padding-top: 10px;
+  padding-bottom: 10px; /* increased! */
+  /* height:16px; */
+  /* line-height:16px; */
+  width: 100%; /* changed from 96 to 100% */
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+.dev-profile {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* responsive */
+/* extra small (mobile)*/
+@media (576px > width) {
+  .main-text * {
+    font-weight: 700;
+    font-family: 'SBAggroB';
+    font-size: 2rem;
+  }
+  .error-message {
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+  .error-message-des {
+    font-weight: 500;
+    font-size: 1.5rem;
+  }
+  .short-info-title {
+    font-size: 2rem;
+  }
+  .short-info {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .dev-profile {
+    width: 300px;
+    height: 300px;
+  }
+  .donation-text {
+    font-size: 1.5rem !important;
+  }
+  .about-header {
+    font-size: 3rem;
+  }
+  .result-text {
+    font-family: 'SBAggroB';
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .underline {
+    background-image: linear-gradient(black 0 0);
+    background-position: bottom center;
+    background-size: 80% 8px;
+    background-repeat: no-repeat;
+    padding-bottom: -10px;
+  }
+  .result-text-main {
+    font-family: 'SBAggroB';
+    font-size: 3rem;
+    font-weight: 700;
+  }
+  .result-links-container {
+    width: 90vw;
+    border-radius: 10px;
+    background-color: var(--olivine);
+    border: 3px solid var(--black);
+  }
+  .result-link-container * {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .link-card {
+    background-color: var(--snow);
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-icon {
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-thumbnail {
+    width: 60vw;
+    height: 30vw;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .card-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+}
+
+/* small */
+@media (576px <= width < 768px) {
+  .main-text * {
+    font-weight: 700;
+    font-family: 'SBAggroB';
+    font-size: 3rem;
+  }
+  .error-message {
+    font-weight: 700;
+    font-size: 2rem;
+  }
+  .error-message-des {
+    font-weight: 500;
+    font-size: 2rem;
+  }
+  .short-info-title {
+    font-size: 3rem;
+  }
+  .short-info {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .dev-profile {
+    width: 300px;
+    height: 300px;
+  }
+  .donation-text {
+    font-size: 1.5rem !important;
+  }
+  .result-text {
+    font-family: 'SBAggroB';
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+  .underline {
+    background-image: linear-gradient(black 0 0);
+    background-position: bottom center;
+    background-size: 80% 8px;
+    background-repeat: no-repeat;
+    padding-bottom: -10px;
+  }
+  .result-text-main {
+    font-family: 'SBAggroB';
+    font-size: 5rem;
+    font-weight: 700;
+  }
+  .result-links-container {
+    width: 85vw;
+    border-radius: 10px;
+    background-color: var(--olivine);
+    border: 3px solid var(--black);
+  }
+  .result-link-container * {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .link-card {
+    background-color: var(--snow);
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-thumbnail {
+    width: 60vw;
+    height: 30vw;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+  }
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .card-text {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+}
+
+/* medium */
+@media (768px <= width < 992px) {
+  .main-text * {
+    font-weight: 700;
+    font-family: 'SBAggroB';
+    font-size: 4rem;
+  }
+  .error-message {
+    font-weight: 700;
+    font-size: 3rem;
+  }
+  .error-message-des {
+    font-weight: 500;
+    font-size: 3rem;
+  }
+  .short-info-title {
+    font-size: 3rem;
+  }
+  .short-info {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .dev-profile {
+    width: 300px;
+    height: 300px;
+  }
+  .donation-text {
+    font-size: 1.5rem !important;
+  }
+  .result-text {
+    font-family: 'SBAggroB';
+    font-size: 3rem;
+    font-weight: 700;
+  }
+  .underline {
+    background-image: linear-gradient(black 0 0);
+    background-position: bottom center;
+    background-size: 80% 8px;
+    background-repeat: no-repeat;
+    padding-bottom: -10px;
+  }
+  .result-text-main {
+    font-family: 'SBAggroB';
+    font-size: 4rem;
+    font-weight: 700;
+  }
+  .result-links-container {
+    width: 90vw;
+    border-radius: 10px;
+    background-color: var(--olivine);
+    border: 3px solid var(--black);
+  }
+  .result-link-container * {
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+  .link-card {
+    background-color: var(--snow);
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-icon {
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-thumbnail {
+    width: 20vw;
+    height: 10vw;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .card-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+/* large */
+@media (992px <= width < 1200px) {
+  .main-text * {
+    font-weight: 700;
+    font-family: 'SBAggroB';
+    font-size: 5rem;
+  }
+  .error-message {
+    font-weight: 700;
+    font-size: 4rem;
+  }
+  .error-message-des {
+    font-weight: 500;
+    font-size: 4rem;
+  }
+  .short-info-title {
+    font-size: 3rem;
+  }
+  .short-info {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .dev-profile {
+    width: 350px;
+    height: 350px;
+  }
+  .donation-text {
+    font-size: 1.5rem !important;
+  }
+  .result-text {
+    font-family: 'SBAggroB';
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+  .underline {
+    background-image: linear-gradient(black 0 0);
+    background-position: bottom center;
+    background-size: 80% 8px;
+    background-repeat: no-repeat;
+    padding-bottom: -10px;
+  }
+  .result-text-main {
+    font-family: 'SBAggroB';
+    font-size: 5rem;
+    font-weight: 700;
+  }
+  .result-links-container {
+    width: 85vw;
+    border-radius: 10px;
+    background-color: var(--olivine);
+    border: 3px solid var(--black);
+  }
+  .result-link-container * {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .link-card {
+    background-color: var(--snow);
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-thumbnail {
+    width: 20vw;
+    height: 10vw;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+  }
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .card-text {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+}
+
+/* extra large */
+@media (1200px <= width < 1400px) {
+  .main-text * {
+    font-weight: 700;
+    font-family: 'SBAggroB';
+    font-size: 6rem;
+  }
+  .error-message {
+    font-weight: 700;
+    font-size: 4.5rem;
+  }
+  .error-message-des {
+    font-weight: 500;
+    font-size: 4.5rem;
+  }
+  .short-info-title {
+    font-size: 3.5rem;
+  }
+  .short-info {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+  .dev-profile {
+    width: 400px;
+    height: 400px;
+  }
+  .donation-text {
+    font-size: 1.5rem !important;
+  }
+  .result-text {
+    font-family: 'SBAggroB';
+    font-size: 3.5rem;
+    font-weight: 700;
+  }
+  .underline {
+    background-image: linear-gradient(black 0 0);
+    background-position: bottom center;
+    background-size: 80% 8px;
+    background-repeat: no-repeat;
+    padding-bottom: -10px;
+  }
+  .result-text-main {
+    font-family: 'SBAggroB';
+    font-size: 5rem;
+    font-weight: 700;
+  }
+  .result-links-container {
+    width: 85vw;
+    border-radius: 10px;
+    background-color: var(--olivine);
+    border: 3px solid var(--black);
+  }
+  .result-link-container * {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .link-card {
+    background-color: var(--snow);
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-thumbnail {
+    width: 20vw;
+    height: 10vw;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+  }
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .card-text {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+}
+
+/* double extra large */
+@media (1400px <= width) {
+  .main-text * {
+    font-weight: 700;
+    font-family: 'SBAggroB';
+    font-size: 6rem;
+  }
+  .error-message {
+    font-weight: 700;
+    font-size: 6rem;
+  }
+  .error-message-des {
+    font-weight: 500;
+    font-size: 6rem;
+  }
+  .short-info-title {
+    font-size: 3.5rem;
+  }
+  .short-info {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+  .dev-profile {
+    width: 500px;
+    height: 500px;
+  }
+  .donation-text {
+    font-size: 1.5rem !important;
+  }
+  .result-text {
+    font-family: 'SBAggroB';
+    font-size: 4rem;
+    font-weight: 700;
+  }
+  .underline {
+    background-image: linear-gradient(black 0 0);
+    background-position: bottom center;
+    background-size: 80% 10px;
+    background-repeat: no-repeat;
+    padding-bottom: -10px;
+  }
+  .result-text-main {
+    font-family: 'SBAggroB';
+    font-size: 6rem;
+    font-weight: 700;
+  }
+  .result-links-container {
+    width: 80vw;
+    border-radius: 10px;
+    background-color: var(--olivine);
+    border: 3px solid var(--black);
+  }
+  .result-link-container * {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+  .link-card {
+    background-color: var(--snow);
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-icon {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--black);
+    border-radius: 10px;
+  }
+  .link-thumbnail {
+    width: 20vw;
+    height: 10vw;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    border: 3px solid var(--black);
+  }
+  .card-title {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+  .card-text {
+    font-size: 3rem;
+    font-weight: 700;
+  }
+}

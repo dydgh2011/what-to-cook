@@ -1,0 +1,52 @@
+<%- include('header') %>
+<div
+  class="main-text search-container mx-2 mt-4 mb-0 m-lg-5 lh-sm main-container"
+>
+  <p class="text-start main-text mb-0">분명 냉장고에</p>
+  <div class="search text-center">
+    <form action="/search" method="get" id="myForm">
+      <textarea
+        id="txtarea"
+        spellcheck="false"
+        class="text-center"
+        name="search"
+        placeholder="계란, 소금, 후추, 당근"
+        autocomplete="off"
+        maxlength="50"
+        minlength="1"
+        oninput="adjustingTextareaHeight('txtarea')"
+      ></textarea>
+    </form>
+  </div>
+  <p class="text-end main-text mb-0">이(가) 있었는데...</p>
+</div>
+
+<script>
+  document
+    .getElementById('txtarea')
+    .addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        // FIXME: change the alert message
+        if (this.value.length < 1) {
+          alert('Please enter at least 1 character.');
+          return;
+        } else if (this.value.length > 50) {
+          alert('Please enter max 50 characters.');
+          return;
+        } else {
+          document.getElementById('myForm').submit();
+        }
+      }
+    });
+
+  function adjustingTextareaHeight(id) {
+    const textarea = document.getElementById(id);
+    textarea.style.overflow = 'hidden';
+    textarea.style.height = 0;
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  adjustingTextareaHeight('txtarea');
+</script>
+<%- include('footer') %>

@@ -1,0 +1,15 @@
+<div class="result-link-container mb-3">
+  <div class="row link-card">
+    <div class="col-md-3 col-12 text-center ">
+        <a href=<%- data.link %> target="_blank" class="">
+            <img class="link-thumbnail mx-auto mt-3 mb-0 my-md-3" src=<%- data.thumbnail %> class="img-fluid rounded-start" alt="..." onerror="this.src='img/what-to-eat-favicon-black.svg'">
+        </a>
+    </div>
+    <div class="col-md-9 col-12">
+        <div class="card-body ms-md-4 my-3 ms-lg-5">
+            <h5 class="card-title mb-2"><a href=<%- data.link %> target="_blank"><img class="link-icon me-2" src="<%- data.favicon %>" alt="" onerror="this.style.display = 'none';" /><%- data.webName %></a></h5>
+            <a href=<%- data.link %> target="_blank"><p class="card-text"><%- data.title %></p></a>
+        </div>
+    </div>
+  </div>
+</div>
