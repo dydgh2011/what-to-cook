@@ -107,7 +107,6 @@ export class SearchService {
   }
 
   async searchRecipe(dishName: string) {
-    return this.generateDummyData();
     try {
       const datas = [];
       const url = `${this.baseUrl}?key=${this.g_key}&cx=${this.g_id}&q=${dishName}+레시피&gl=${'ko'}&hl=${'ko'}`;

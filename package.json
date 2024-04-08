@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && yarn sentry:sourcemaps",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "STAGE=local cross-env NODE_ENV=development nest start --watch",
@@ -23,7 +23,8 @@
     "migration:generate": "yarn typeorm migration:generate ./src/database/migrations/Migration",
     "migration:run": "yarn typeorm migration:run",
     "migration:revert": "yarn typeorm migration:revert",
-    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run"
+    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org yongho-nam --project node ./dist && sentry-cli sourcemaps upload --org yongho-nam --project node ./dist"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -34,6 +35,9 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.3.0",
     "@nestjs/typeorm": "^10.0.2",
+    "@sentry/cli": "^2.31.0",
+    "@sentry/node": "^7.109.0",
+    "@sentry/profiling-node": "^7.109.0",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "cheerio": "^1.0.0-rc.12",
