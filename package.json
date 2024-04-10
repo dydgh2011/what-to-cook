@@ -6,9 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && yarn sentry:sourcemaps",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
     "start:dev": "STAGE=local cross-env NODE_ENV=development nest start --watch",
     "start:debug": "cross-env NODE_ENV=development nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=production node dist/main",
@@ -24,7 +23,7 @@
     "migration:run": "yarn typeorm migration:run",
     "migration:revert": "yarn typeorm migration:revert",
     "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org yongho-nam --project node ./dist && sentry-cli sourcemaps upload --org yongho-nam --project node ./dist"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org yongho-nam --project what-to-cook ./dist && sentry-cli sourcemaps upload --org yongho-nam --project what-to-cook ./dist"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

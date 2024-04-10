@@ -1,0 +1,11 @@
+node_modules
+test
+dist
+coverage
+.github
+*.spec.ts
+*.md
+Dockerfile
+*.yml
+.gitignore
+.http

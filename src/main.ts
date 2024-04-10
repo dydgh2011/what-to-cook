@@ -14,13 +14,15 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { SentryFilter } from './filters/sentry.filter';
 
 async function bootstrap() {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    integrations: [nodeProfilingIntegration()],
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
-    debug: true,
-  });
+  if (process.env.NODE === 'production') {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      integrations: [nodeProfilingIntegration()],
+      tracesSampleRate: 1.0,
+      profilesSampleRate: 1.0,
+      debug: true,
+    });
+  }
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -36,29 +38,33 @@ async function bootstrap() {
     );
   }
 
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new SentryFilter(httpAdapter));
+  if (process.env.NODE === 'production') {
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new SentryFilter(httpAdapter));
+  }
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  const config = new DocumentBuilder()
-    .setTitle('What To Cook API')
-    .setDescription('API description for What To Cook application.')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  if (process.env.NODE !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('What To Cook API')
+      .setDescription('API description for What To Cook application.')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
 
-  const customOptions: SwaggerCustomOptions = {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  };
+    const customOptions: SwaggerCustomOptions = {
+      swaggerOptions: {
+        persistAuthorization: true,
+      },
+    };
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, customOptions);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document, customOptions);
+  }
 
   await app.listen(3000);
 }
