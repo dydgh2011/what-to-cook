@@ -1,0 +1,110 @@
+name: AWS Deplyment
+run-name: ${{ github.actor}} is deploying to EC2
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Define ENV From Github Secrets
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_SYNC: ${{ secrets.DB_SYNC }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          GOOGLE_SEARCH_API_KEY: ${{ secrets.GOOGLE_SEARCH_API_KEY }}
+          GOOGLE_SEARCH_ENGINE_ID: ${{ secrets.GOOGLE_SEARCH_ENGINE_ID }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          WHATTOCOOKKEYPAIR: ${{ secrets.WHATTOCOOKKEYPAIR }}
+        run: |
+          set -e
+      - name: Install Docker
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+          apt-cache policy docker-ce
+          sudo apt-get install docker-ce
+          sudo systemctl status docker
+      - name: Install Node & Yarn
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+          sudo apt-get install curl 
+          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get update
+          sudo apt-get install nodejs -y
+          node --version
+          npm install -g yarn
+      - name: Build Project To Make ./dist Folder
+        run: |
+          set -e
+          yarn build
+      - name: Build Docker Image With ENV
+        run: |
+          set -e
+          docker build --build-arg NODE_ENV=$NODE_ENV --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USERNAME=$DB_USERNAME --build-arg DB_PASSWORD=$DB_PASSWORD --build-arg DB_NAME=$DB_NAME --build-arg DB_SYNC=$DB_SYNC --build-arg OPENAI_API_KEY=$OPENAI_API_KEY --build-arg JWT_KEY=$JWT_KEY --build-arg JWT_EXPIRES_IN=$JWT_EXPIRES_IN --build-arg API_DOCS_USER=$API_DOCS_USER --build-arg API_DOCS_PASSWORD=$API_DOCS_PASSWORD --build-arg GOOGLE_SEARCH_API_KEY=$GOOGLE_SEARCH_API_KEY --build-arg GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN --build-arg SENTRY_DSN=$SENTRY_DSN -t what-to-cook-image .
+          ls
+      # - name: Connect to EC2 SSH
+      #   env:
+      #     EC2_KEY: ${{ secrets.WHATTOCOOKKEYPAIR }}
+      #     EC2_HOST: ${{ secrets.EC2_HOST }}
+      #     EC2_USER: ${{ secrets.EC2_USER }}
+      #   run: |
+      #       set -e
+      #       echo "$EC2_KEY" > private_key && chmod 600 private_key
+      #       ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #         ls
+      #         pwd
+      #       '
+
+      # - name: Terminate Current Docker Container
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+
+      #       '
+
+      # - name: Remove Old Docker Image
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+
+      #       '
+
+      # - name: Send Image To EC2
+      #   run: |
+      #     set -e
+      #     scp -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST}
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+
+      #       '
+
+      # - name: Run Docker Container With New Image
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+
+      #       '
+
+      # - name: Check If Container is Running
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+
+      #       '
