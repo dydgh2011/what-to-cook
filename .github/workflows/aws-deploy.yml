@@ -51,7 +51,7 @@ jobs:
           sudo apt-get install nodejs -y
           node --version
           npm install -g yarn
-          npm install -g @nestjs/cli
+          yarn install
       - name: Build Project To Make ./dist Folder
         run: |
           set -e
