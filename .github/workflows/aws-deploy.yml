@@ -54,6 +54,8 @@ jobs:
       - name: Build Project To Make ./dist Folder
         run: |
           set -e
+          ls
+          pwd
           yarn build
       - name: Build Docker Image With ENV
         run: |
