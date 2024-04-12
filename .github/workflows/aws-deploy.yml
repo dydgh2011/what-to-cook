@@ -34,6 +34,8 @@ jobs:
         run: |
           set -e
           echo "NODE_ENV=$NODE_ENV"
+          echo "${{ secrets.DB_HOST }}"
+          echo "${{ secrets.DB_HOST }}"
           sudo apt-get update
           sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
           curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
