@@ -87,11 +87,15 @@ jobs:
       - name: Terminate Current Docker Container
         run: |
           set -e
+          ls
+          echo "user is ${EC2_USER}"
+          echo "host is ${EC2_HOST}"
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            ls
             if [ -n "$(sudo docker ps -q)" ]; then
                 sudo docker stop $(sudo docker container ls -q)
             fi
+          '
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             if [ -n "$(sudo docker container ls -q)" ]; then
                 sudo docker rm $(sudo docker container ls -q)
             fi
