@@ -92,7 +92,7 @@ jobs:
           echo "host is ${EC2_HOST}"
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             if [ -n "$(sudo docker ps -q)" ]; then
-                sudo docker stop $(sudo docker container ls -q)
+                sudo docker stop $(sudo docker ps -q)
             fi
           '
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
@@ -106,7 +106,7 @@ jobs:
           set -e
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             if [ -n "$(sudo docker image ls -q)" ]; then
-                sudo docker rmi $(sudo docker ps -q)
+                sudo docker rmi $(sudo docker image ls -q)
             fi
           '
 
