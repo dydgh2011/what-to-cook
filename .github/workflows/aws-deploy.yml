@@ -9,6 +9,10 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     environment: production
+    env:
+      EC2_KEY: ${{ secrets.EC2_KEY }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,10 +75,6 @@ jobs:
           ls
 
       - name: Connect to EC2 SSH
-        env:
-          EC2_KEY: ${{ secrets.EC2_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
           set -e
           echo "$EC2_KEY" > private_key && chmod 600 private_key
