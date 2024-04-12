@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Define ENV From Github Secrets
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
@@ -30,6 +31,7 @@ jobs:
           WHATTOCOOKKEYPAIR: ${{ secrets.WHATTOCOOKKEYPAIR }}
         run: |
           set -e
+
       - name: Install Docker
         run: |
           set -e
@@ -40,6 +42,7 @@ jobs:
           apt-cache policy docker-ce
           sudo apt-get install docker-ce
           sudo systemctl status docker
+
       - name: Install Node & Yarn & Next.js CLI
         run: |
           set -e
@@ -52,65 +55,70 @@ jobs:
           node --version
           npm install -g yarn
           yarn install
+
       - name: Build Project To Make ./dist Folder
         run: |
           set -e
           ls
           pwd
           yarn build
+
       - name: Build Docker Image With ENV
         run: |
           set -e
           docker build --build-arg NODE_ENV=$NODE_ENV --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USERNAME=$DB_USERNAME --build-arg DB_PASSWORD=$DB_PASSWORD --build-arg DB_NAME=$DB_NAME --build-arg DB_SYNC=$DB_SYNC --build-arg OPENAI_API_KEY=$OPENAI_API_KEY --build-arg JWT_KEY=$JWT_KEY --build-arg JWT_EXPIRES_IN=$JWT_EXPIRES_IN --build-arg API_DOCS_USER=$API_DOCS_USER --build-arg API_DOCS_PASSWORD=$API_DOCS_PASSWORD --build-arg GOOGLE_SEARCH_API_KEY=$GOOGLE_SEARCH_API_KEY --build-arg GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN --build-arg SENTRY_DSN=$SENTRY_DSN -t what-to-cook-image .
-          ls
-          pwd
-          cd /var/lib/
-          ls -l
-      # - name: Connect to EC2 SSH
-      #   env:
-      #     EC2_KEY: ${{ secrets.WHATTOCOOKKEYPAIR }}
-      #     EC2_HOST: ${{ secrets.EC2_HOST }}
-      #     EC2_USER: ${{ secrets.EC2_USER }}
-      #   run: |
-      #       set -e
-      #       echo "$EC2_KEY" > private_key && chmod 600 private_key
-      #       ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #         ls
-      #         pwd
-      #       '
+          docker save -o ./server-image.tar what-to-cook-image
 
-      # - name: Terminate Current Docker Container
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      - name: Connect to EC2 SSH
+        env:
+          EC2_KEY: ${{ secrets.WHATTOCOOKKEYPAIR }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          set -e
+          echo "$EC2_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+            ls
+            pwd
+          '
 
-      #       '
+      - name: Terminate Current Docker Container
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+            sudo docker stop $(sudo docker ps -q) || true
+            sudo docker rm -f $(sudo docker ps -a -q) || true
+            '
 
-      # - name: Remove Old Docker Image
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      - name: Remove Old Docker Image
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+            sudo docker image prune -a -f
+            '
 
-      #       '
+      - name: Send Image To EC2
+        run: |
+          set -e
+          scp -o StrictHostKeyChecking=no -i private_key server-image.tar ${EC2_USER}@${EC2_HOST}:/home/ubuntu
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+            pwd
+            ls
+            '
 
-      # - name: Send Image To EC2
-      #   run: |
-      #     set -e
-      #     scp -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST}
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      - name: Run Docker Container With New Image
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+            sudo docker load -i server-image.tar
+            df -h
+            sudo docker run -d --name server what-to-cook-server 
+            sudo rm server-image.tar
+            '
 
-      #       '
-
-      # - name: Run Docker Container With New Image
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-
-      #       '
-
-      # - name: Check If Container is Running
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-
-      #       '
+      - name: Check If Container is Running
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+            sudo docker ps
+            '
