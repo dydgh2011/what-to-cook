@@ -81,7 +81,6 @@ jobs:
           --build-arg GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID \
           --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
           --build-arg SENTRY_DSN=$SENTRY_DSN \
-          -p 3000:3000
           -t what-to-cook-image .
           docker save -o ./server-image.tar what-to-cook-image
           ls
@@ -137,7 +136,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             sudo docker load -i server-image.tar
             df -h
-            sudo docker run -d --name server what-to-cook-image
+            sudo docker run -d -p 3000:3000 --name server what-to-cook-image
             sudo rm server-image.tar
           '
 
