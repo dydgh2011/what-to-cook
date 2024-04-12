@@ -33,9 +33,9 @@ jobs:
       - name: Install Docker
         run: |
           set -e
-          echo "NODE_ENV=$NODE_ENV"
-          echo "NODE_ENV= $NODE_ENV"
-          echo "NODE_ENV= ${NODE_ENV}"
+          echo "DB_HOST=$DB_HOST"
+          echo "DB_HOST= $DB_HOST"
+          echo "DB_HOST= ${DB_HOST}"
           echo "${{ secrets.DB_HOST }}"
           echo "${{ secrets.DB_HOST }}"
           sudo apt-get update
