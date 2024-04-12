@@ -87,14 +87,14 @@ jobs:
       - name: Terminate Current Docker Container
         run: |
           set -e
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            if [ -n "$(sudo docker ps -q)" ]; then
-                sudo docker stop $(sudo docker ps -q)
-            fi
-
-            if [ -n "$(sudo docker container ls -q)" ]; then
-                sudo docker stop $(sudo docker container ls -q)
-            fi
+            ssh -o StrictHostKeyChecking=no -i private_key ubuntu@ec2-52-79-227-50.ap-northeast-2.compute.amazonaws.com '
+                ls
+                if [ -n "$(sudo docker ps -q)" ]; then
+                    sudo docker stop $(sudo docker container ls -q)
+                fi
+                if [ -n "$(sudo docker container ls -q)" ]; then
+                    sudo docker rm $(sudo docker container ls -q)
+                fi
             '
 
       - name: Remove Old Docker Image
@@ -102,7 +102,7 @@ jobs:
           set -e
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             if [ -n "$(sudo docker image ls -q)" ]; then
-                sudo docker stop $(sudo docker ps -q)
+                sudo docker rmi $(sudo docker ps -q)
             fi
             '
 
