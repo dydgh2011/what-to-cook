@@ -64,8 +64,24 @@ jobs:
       - name: Build Docker Image With ENV
         run: |
           set -e
-          echo "$DB_HOST"
-          docker build --build-arg NODE_ENV=production --build-arg DB_HOST=$DB_HOST --build-arg DB_PORT=$DB_PORT --build-arg DB_USERNAME=$DB_USERNAME --build-arg DB_PASSWORD=$DB_PASSWORD --build-arg DB_NAME=$DB_NAME --build-arg DB_SYNC=$DB_SYNC --build-arg OPENAI_API_KEY=$OPENAI_API_KEY --build-arg JWT_KEY=$JWT_KEY --build-arg JWT_EXPIRES_IN=$JWT_EXPIRES_IN --build-arg API_DOCS_USER=$API_DOCS_USER --build-arg API_DOCS_PASSWORD=$API_DOCS_PASSWORD --build-arg GOOGLE_SEARCH_API_KEY=$GOOGLE_SEARCH_API_KEY --build-arg GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN --build-arg SENTRY_DSN=$SENTRY_DSN -t what-to-cook-image .
+          docker build \
+          --build-arg NODE_ENV=production \
+          --build-arg DB_HOST=$DB_HOST \
+          --build-arg DB_PORT=$DB_PORT \
+          --build-arg DB_USERNAME=$DB_USERNAME \
+          --build-arg DB_PASSWORD=$DB_PASSWORD \
+          --build-arg DB_NAME=$DB_NAME \
+          --build-arg DB_SYNC=$DB_SYNC \
+          --build-arg OPENAI_API_KEY=$OPENAI_API_KEY \
+          --build-arg JWT_KEY=$JWT_KEY \
+          --build-arg JWT_EXPIRES_IN=$JWT_EXPIRES_IN \
+          --build-arg API_DOCS_USER=$API_DOCS_USER \
+          --build-arg API_DOCS_PASSWORD=$API_DOCS_PASSWORD \
+          --build-arg GOOGLE_SEARCH_API_KEY=$GOOGLE_SEARCH_API_KEY \
+          --build-arg GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID \
+          --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
+          --build-arg SENTRY_DSN=$SENTRY_DSN \
+          -t what-to-cook-image .
           docker save -o ./server-image.tar what-to-cook-image
           ls
 

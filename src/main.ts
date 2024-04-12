@@ -14,14 +14,6 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { SentryFilter } from './filters/sentry.filter';
 
 async function bootstrap() {
-  console.log('NODE_ENV:', process.env.NODE);
-  console.log('DB_HOST:', process.env.DB_HOST);
-  console.log('DB_NAME:', process.env.DB_NAME);
-  console.log('DB_PORT:', process.env.DB_PORT);
-  console.log('DB_USERNAME:', process.env.DB_USERNAME);
-  console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-  console.log('SENTRY_DSN:', process.env.SENTRY_DSN);
-
   if (process.env.NODE === 'production') {
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
