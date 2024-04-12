@@ -88,15 +88,22 @@ jobs:
         run: |
           set -e
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            sudo docker stop $(sudo docker ps -q) || true
-            sudo docker rm -f $(sudo docker ps -a -q) || true
+            if [ -n "$(sudo docker ps -q)" ]; then
+                sudo docker stop $(sudo docker ps -q)
+            fi
+
+            if [ -n "$(sudo docker container ls -q)" ]; then
+                sudo docker stop $(sudo docker container ls -q)
+            fi
             '
 
       - name: Remove Old Docker Image
         run: |
           set -e
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            sudo docker image prune -a -f
+            if [ -n "$(sudo docker image ls -q)" ]; then
+                sudo docker stop $(sudo docker ps -q)
+            fi
             '
 
       - name: Send Image To EC2
