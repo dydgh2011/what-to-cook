@@ -125,7 +125,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             sudo docker load -i server-image.tar
             df -h
-            sudo docker run -d --name server what-to-cook-server 
+            sudo docker run -d --name server what-to-cook-image 
             sudo rm server-image.tar
           '
 
