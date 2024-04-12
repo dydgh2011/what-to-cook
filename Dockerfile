@@ -47,6 +47,6 @@ COPY ./views ./views
 
 COPY ./public ./public
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["node", "src/main.js"]
