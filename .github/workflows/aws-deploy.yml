@@ -100,8 +100,6 @@ jobs:
         run: |
           set -e
           ls
-          echo "user is ${EC2_USER}"
-          echo "host is ${EC2_HOST}"
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             if [ -n "$(sudo docker ps -a -q)" ]; then
                 sudo docker stop $(sudo docker ps -a -q)
