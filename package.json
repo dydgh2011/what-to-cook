@@ -1,10 +1,22 @@
 {
   "name": "what-to-cook",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0.0",
+  "homepage": "https://aitocook.com/",
+  "bugs": {
+    "url": "https://github.com/dydgh2011/what-to-cook/issues"
+  },
+  "description": "What To Cook serves you a recipe based on the ingredients you have at home.",
+  "author": {
+    "name": "Yongho (Mark) Nam",
+    "email": "dydgh2011@gmail.com",
+    "url": "https://github.com/dydgh2011"
+  },
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dydgh2011/what-to-cook"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

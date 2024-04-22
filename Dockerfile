@@ -37,7 +37,12 @@ ENV SENTRY_DSN=$SENTRY_DSN
 WORKDIR /app
 
 COPY package.json ./
+COPY package-lock.json ./
+
 COPY yarn.lock ./
+
+# change to not install dev dependencies in production (yarn install --production)
+# check if it's yarn install or yarn add something
 
 RUN yarn install
 
