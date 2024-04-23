@@ -12,6 +12,7 @@ export class SearchController {
   @Get('')
   @Render('pages/result')
   async search(@Query('search') ingredients: string, @Request() req) {
+    // if it's empty return error code
     const { result, datas } = await this.searchService.search(ingredients);
     if (result.includes('ERROR')) {
       return {
