@@ -28,9 +28,16 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'JalnanGothic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 :root {
-  --snow: #f7f0f0;
-  --black: #000000;
+  --snow: rgb(247, 240, 240);
+  --black: rgb(33, 37, 41);
   --dark-olivine: #6ca25e;
   --olivine: #8cba80;
   --light-olivine: #b0d4a7;
@@ -46,6 +53,8 @@
 
 * {
   font-family: 'GmarketSansMedium';
+  color: var(--black);
+
   margin: 0px;
   padding: 0px;
 }
@@ -187,7 +196,7 @@ textarea {
   border: none;
   outline: none;
   font-size: inherit;
-  font-family: inherit;
+  font-family: 'JalnanGothic' !important;
   background: none;
   box-shadow: none;
   -webkit-appearance: none;
@@ -197,11 +206,83 @@ textarea {
   -moz-box-shadow: none;
   box-shadow: none;
   padding-top: 10px;
-  padding-bottom: 10px; /* increased! */
-  /* height:16px; */
-  /* line-height:16px; */
-  width: 100%; /* changed from 96 to 100% */
+  padding-bottom: 10px;
+  width: 100%;
   display: block;
+  caret-color: transparent;
+  resize: none;
+}
+
+.container {
+  position: relative;
+}
+.container__textarea {
+  background: transparent;
+  caret-color: transparent;
+  position: relative;
+}
+.container__mirror {
+  position: absolute;
+  top: 0;
+  left: 0.5rem;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  color: transparent;
+}
+.container__cursor {
+  animation: blink 1s infinite;
+  background-color: rgb(15 23 42);
+  position: absolute;
+  width: 0.2em;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgb(15 23 42);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgb(15 23 42);
+  }
+}
+
+.submit-button {
+  background-color: var(--olivine);
+  color: var(--snow);
+  border: 3px solid var(--black);
+  transition: transform 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: var(--olivine);
+  color: var(--snow);
+  transform: scale(1.1);
+  border: 3px solid var(--black);
+}
+
+.submit-button:active,
+.submit-button:active:focus,
+.submit-button:focus {
+  background-color: var(--olivine);
+  color: var(--snow);
+  border: 3px solid var(--black);
+}
+
+.submit-button:disabled {
+  background-color: var(--snow);
+  color: var(--black);
+  border: 3px solid var(--black);
 }
 
 a {
@@ -211,6 +292,43 @@ a {
 .dev-profile {
   object-fit: contain;
   object-position: center;
+}
+
+.modal-content {
+  background-color: var(--snow);
+  border: 3px solid var(--black);
+  font-family: 'SBAggroB';
+}
+
+.modal-button,
+.modal-button:hover,
+.modal-button:active {
+  background-color: var(--snow);
+  color: var(--black);
+  border: 3px solid var(--black);
+}
+
+.modal-title {
+  font-family: 'SBAggroB';
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.modal-header {
+  border-bottom: 8px solid var(--olivine);
+  padding-bottom: 0;
+}
+
+.modal-body {
+  font-family: 'SBAggroB';
+  font-size: 1.5rem;
+  font-weight: 500;
+  padding-bottom: 0;
+}
+
+.modal-footer {
+  border: none;
+  padding-top: 0;
 }
 
 /* responsive */
@@ -300,6 +418,29 @@ a {
     font-size: 1.3rem;
     font-weight: 700;
   }
+  .guideline {
+    font-size: 1rem;
+    font-family: 'SBAggroB';
+    color: var(--black);
+    font-weight: 500;
+    width: 60vw;
+    background-color: var(--snow);
+    border: 4px solid var(--black);
+    border-radius: 10px;
+    position: absolute;
+    left: 6vw;
+    bottom: 30vh;
+    z-index: 1;
+  }
+  .guideline-back {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    min-height: calc(100vh - var(--navbar-height));
+    z-index: 0;
+  }
 }
 
 /* small */
@@ -384,6 +525,29 @@ a {
   .card-text {
     font-size: 2rem;
     font-weight: 700;
+  }
+  .guideline {
+    font-size: 1.3rem;
+    font-family: 'SBAggroB';
+    color: var(--black);
+    font-weight: 500;
+    width: 50vw;
+    background-color: var(--snow);
+    border: 4px solid var(--black);
+    border-radius: 10px;
+    position: absolute;
+    left: 6vw;
+    bottom: 20vh;
+    z-index: 1;
+  }
+  .guideline-back {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    min-height: calc(100vh - var(--navbar-height));
+    z-index: 0;
   }
 }
 
@@ -470,6 +634,29 @@ a {
     font-size: 1.5rem;
     font-weight: 700;
   }
+  .guideline {
+    font-size: 1.2rem;
+    font-family: 'SBAggroB';
+    color: var(--black);
+    font-weight: 500;
+    width: 40vw;
+    background-color: var(--snow);
+    border: 4px solid var(--black);
+    border-radius: 10px;
+    position: absolute;
+    left: 6vw;
+    bottom: 10vh;
+    z-index: 1;
+  }
+  .guideline-back {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    min-height: calc(100vh - var(--navbar-height));
+    z-index: 0;
+  }
 }
 
 /* large */
@@ -554,6 +741,29 @@ a {
   .card-text {
     font-size: 2rem;
     font-weight: 700;
+  }
+  .guideline {
+    font-size: 1.3rem;
+    font-family: 'SBAggroB';
+    color: var(--black);
+    font-weight: 500;
+    width: 40vw;
+    background-color: var(--snow);
+    border: 4px solid var(--black);
+    border-radius: 10px;
+    position: absolute;
+    left: 6vw;
+    bottom: 10vh;
+    z-index: 1;
+  }
+  .guideline-back {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    min-height: calc(100vh - var(--navbar-height));
+    z-index: 0;
   }
 }
 
@@ -640,6 +850,29 @@ a {
     font-size: 2rem;
     font-weight: 700;
   }
+  .guideline {
+    font-size: 1.5rem;
+    font-family: 'SBAggroB';
+    color: var(--black);
+    font-weight: 500;
+    width: 40vw;
+    background-color: var(--snow);
+    border: 4px solid var(--black);
+    border-radius: 10px;
+    position: absolute;
+    left: 6vw;
+    bottom: 10vh;
+    z-index: 1;
+  }
+  .guideline-back {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    min-height: calc(100vh - var(--navbar-height));
+    z-index: 0;
+  }
 }
 
 /* double extra large */
@@ -724,5 +957,28 @@ a {
   .card-text {
     font-size: 3rem;
     font-weight: 700;
+  }
+  .guideline {
+    font-size: 1.8rem;
+    font-family: 'SBAggroB';
+    color: var(--black);
+    font-weight: 500;
+    width: 40vw;
+    background-color: var(--snow);
+    border: 4px solid var(--black);
+    border-radius: 10px;
+    position: absolute;
+    left: 6vw;
+    bottom: 20vh;
+    z-index: 1;
+  }
+  .guideline-back {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    min-height: calc(100vh - var(--navbar-height));
+    z-index: 0;
   }
 }
