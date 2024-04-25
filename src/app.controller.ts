@@ -17,6 +17,7 @@ import { UserService } from './routes/user/user.service';
 import { CreateUserDto } from './routes/user/dto/create-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
+import { IsPage } from './decorators/page.decorator';
 
 @Controller()
 @ApiTags('App')
@@ -29,13 +30,15 @@ export class AppController {
   ) {}
 
   @Public()
+  @IsPage()
   @Get()
   @Render('pages/index')
   root(@Request() req) {
-    return { user: req.user, baseURL: this.configService.get('BASE_URL') };
+    return { user: req.user };
   }
 
   @Public()
+  @IsPage()
   @Get('about')
   @Render('pages/about')
   about() {
@@ -43,6 +46,7 @@ export class AppController {
   }
 
   @Public()
+  @IsPage()
   @Get('login')
   login(@Request() req, @Response() res) {
     if (req.headers['authorization']) {
@@ -65,6 +69,7 @@ export class AppController {
   //login with facebook (post)
 
   @Public()
+  @IsPage()
   @Get('signup')
   signUpPage(@Request() req, @Response() res) {
     if (req.headers['authorization']) {

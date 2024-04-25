@@ -11,10 +11,11 @@ import { SearchModule } from './routes/search/search.module';
 import postgresConfig from './config/postgres.config';
 import jwtConfig from './config/jwt.config';
 import openAIConfig from './config/openAI.config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JWTAuthGuard } from './auth/jwt-auth.guard';
 import { RoleGuard } from './guards/role.guard';
 import { DevelopmentMiddleware } from './middlewares/on-development.middleware';
+import { BaseUrlInterceptor } from './intercepters/base-value.intercepter';
 
 @Module({
   imports: [
@@ -63,6 +64,10 @@ import { DevelopmentMiddleware } from './middlewares/on-development.middleware';
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: BaseUrlInterceptor,
     },
   ],
 })
