@@ -1,6 +1,7 @@
 FROM node:20
 
 ARG NODE_ENV
+ARG BASE_URL
 ARG DB_HOST
 ARG DB_PORT
 ARG DB_USERNAME
@@ -18,6 +19,7 @@ ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_DSN
 
 ENV NODE_ENV=$NODE_ENV
+ENV BASE_URL=$BASE_URL
 ENV DB_HOST=$DB_HOST
 ENV DB_PORT=$DB_PORT
 ENV DB_USERNAME=$DB_USERNAME
@@ -41,10 +43,7 @@ COPY package-lock.json ./
 
 COPY yarn.lock ./
 
-# change to not install dev dependencies in production (yarn install --production)
-# check if it's yarn install or yarn add something
-
-RUN yarn install
+RUN yarn install --prod
 
 COPY ./dist ./src
 

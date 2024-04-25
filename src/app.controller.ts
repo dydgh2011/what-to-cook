@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth/auth.service';
 import {
   Body,
@@ -24,13 +25,14 @@ export class AppController {
     private readonly appService: AppService,
     private authService: AuthService,
     private userService: UserService,
+    private configService: ConfigService,
   ) {}
 
   @Public()
   @Get()
   @Render('pages/index')
   root(@Request() req) {
-    return { user: req.user };
+    return { user: req.user, baseURL: this.configService.get('BASE_URL') };
   }
 
   @Public()

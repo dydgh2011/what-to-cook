@@ -26,7 +26,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  if (process.env.NODE !== 'production') {
+  if (process.env.NODE === 'development') {
     app.use(
       '/api*',
       basicAuth({
@@ -48,7 +48,7 @@ async function bootstrap() {
   app.setViewEngine('ejs');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  if (process.env.NODE !== 'production') {
+  if (process.env.NODE === 'development') {
     const config = new DocumentBuilder()
       .setTitle('What To Cook API')
       .setDescription('API description for What To Cook application.')

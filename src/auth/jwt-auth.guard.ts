@@ -22,11 +22,7 @@ export class JWTAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
-
-    //check if user has bearer token
-    // if he has the token then check if the token is valid
     const checkToken = request.headers['authorization'];
-    
     if (isPublic && !checkToken) {
       request.user = undefined;
       return true;
