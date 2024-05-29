@@ -5,8 +5,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/routes/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
+import { TokenPayload } from './dto/req.dto';
 
-//FIXME: try to write test case for this if needed
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -21,16 +21,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: number; username: string }) {
-    const user = await this.userService.getUserById(payload.sub);
-    if (
-      !user ||
-      user.id !== payload.sub ||
-      user.username !== payload.username
-    ) {
+  async validate(payload: TokenPayload) {
+    const user = await this.userService.getUserById({
+      id: payload.id,
+      userFields: [
+        'username',
+        'verificationMethod',
+        'verificationValue',
+        'email',
+        'password',
+        'accessTokenVersion',
+        'refreshTokenVersion',
+        'emailConfirmed',
+        'role',
+      ],
+    });
+    if (!user || user.id !== payload.id) {
       throw new UnauthorizedException();
     }
-
-    return { userId: payload.sub, username: payload.username };
+    return user;
   }
 }

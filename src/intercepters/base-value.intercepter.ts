@@ -21,7 +21,6 @@ export class BaseUrlInterceptor implements NestInterceptor {
       context.getHandler(),
       context.getClass(),
     ]);
-    console.log('isPage ', isPage);
     if (isPage) {
       return next.handle().pipe(
         map((data) => ({

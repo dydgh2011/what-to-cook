@@ -1,4 +1,43 @@
 
-GET http://localhost/tt
+POST http://localhost/user
+
 content-type: application/json
+{
+    "name": "",
+    "email": ""    
+}
 ###
+POST http://localhost/login
+content-type: application/json
+
+{
+  "username": "1MarkNamSecond",
+  "password": "1Nam14135647!"
+}
+
+###
+POST http://localhost/user/friend-request/2
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTQ0NDA0NzIsImV4cCI6MTcxNDQ0MjI3Mn0.0QKNNgiHlM25AlQ7jZLtOHH7srxih9ehyWiQlR-r6FU
+###
+
+PATCH http://localhost/user
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTQ0NDI2MTIsImV4cCI6MTcxNDQ0NDQxMn0.8zByccWADJoJKD7p5OTaxm7meJA8JULpCErxdLMAZH8
+
+{
+  "id": 5,
+  "useㄴrname": "1MarkNamSecond"
+}
+
+###
+POST http://localhost/friend-test
+content-type: application/json
+
+{
+  "userId": 1,
+  "friendId": 3
+}
+
+###
+GET http://localhost/auth/test/1

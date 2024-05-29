@@ -1,0 +1,179 @@
+<%- include('header') %>
+    <div class="main-text mt-xxl-5 mb-0 lh-sm main-container">
+      <div class="post-form-container mx-xl-auto mb-xxl-5">
+        <div class="post-form-title text-center">Create Post Form</div>
+        <form action="" class="post-form">
+          <label>썸네일 : </label>
+          <div class="file-upload-container">
+            <input
+              class="custom-file-upload upload-name"
+              value="첨부파일"
+              placeholder="첨부파일"
+              readonly
+            />
+            <label for="file" class="custom-file-upload-button">파일찾기</label>
+            <input type="file" id="file" />
+            <img
+              id="imagePreview"
+              src="#"
+              alt="Image Preview"
+              style="
+                display: none;
+                width: 200px;
+                margin-left: 20px;
+                object-fit: contain;
+              "
+            />
+          </div>
+
+          <label for="title">제목 : </label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            maxlength="25"
+            minlength="1"
+            required
+            spellcheck="false"
+          />
+
+          <label for="description">간략한 설명 : </label>
+          <input
+            type="text"
+            name="description"
+            id="description"
+            maxlength="50"
+            minlength="1"
+            required
+            spellcheck="false"
+          />
+
+          <label for="content">내용 : </label>
+          <textarea
+            name="content"
+            id="content"
+            maxlength="2000"
+            minlength="1"
+            required
+            spellcheck="false"
+          ></textarea>
+        </form>
+        <button class="post-upload-button mx-auto" onclick="submitButtonEvent()" id="submit-button">업로드</button>
+      </div>
+    </div>
+<%- include('footer') %>
+<script src="/scripts/non-publick.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#file').on('change', function () {
+    var file = this.files[0];
+    var validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    var maxSizeInMB = 2;
+    var maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (file) {
+        if (!validImageTypes.includes(file.type)) {
+        errorPopup(
+            'Invalid file type. Please select an image file (jpeg, png, webp).',
+        );
+        $('#file').val('');
+        $('.upload-name').val('첨부파일');
+        $('#imagePreview').css('display', 'none');
+        return;
+        }
+
+        if (file.size > maxSizeInBytes) {
+        errorPopup('File size exceeds 2MB. Please select a smaller file.');
+        $('#file').val('');
+        $('.upload-name').val('첨부파일');
+        $('#imagePreview').css('display', 'none');
+        return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+        $('#imagePreview').attr('src', e.target.result);
+        $('#imagePreview').css('display', 'inline-block');
+        };
+        reader.readAsDataURL(file);
+
+        var fileName = $('#file').val().split('\\').pop();
+        $('.upload-name').val(fileName);
+    }
+    });
+</script>
+<script>
+
+  function disableSubmitButton() {
+    setTimeout(() => {
+      document.getElementById('submit-button').disabled = true;
+      setTimeout(() => {
+        document.getElementById('submit-button').disabled = false;
+      }, 4000);
+    }, 50);
+  }
+
+  // submit setup
+  async function submitButtonEvent() {
+    event.preventDefault();
+
+    // get values
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const content = document.getElementById('content').value;
+
+    // check validation
+    if(title.length < 1) {
+        alertPopup('제목을 최소 1글자 이상 입력해주세요.');
+        return;
+    }
+    if(title.length > 25) {
+        alertPopup('제목은 최대 25글자 입니다.');
+        return;
+    }
+    if(description.length < 1) {
+        alertPopup('설명을 최소 1글자 이상 입력해주세요.');
+        return;
+    }
+    if(description.length > 50) {
+        alertPopup('설명은 최대 50글자 입니다.');
+        return;
+    }
+    if(content.length < 1) {
+        alertPopup('내용을 최소 1글자 이상 입력해주세요.');
+        return;
+    }
+    if(content.length > 2000) {
+        alertPopup('내용은 최대 2000글자 입니다.');
+        return;
+    }
+
+    // set request body
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('content', content);
+    const fileInput = document.getElementById('file');
+    if (fileInput.files[0]) {
+      formData.append('thumbnail', fileInput.files[0]);
+    }else{
+        errorPopup('썸네일을 등록해 주세요.')
+    }
+
+
+    const button = document.getElementById('submit-button');
+    if(!button.disabled){
+        // send request
+        disableSubmitButton();
+        showLoading();
+        try{
+            await sendPostRequestWithForm('/board/',formData);
+            hideLoading();
+            messagePopup('개시물 업로드 완료', ()=>{window.location.href = '/community';});
+        }catch(error){
+            hideLoading();
+            errorPopup(error.response.data.message);
+        }
+    }
+  }
+</script>

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BoardModule } from './routes/board/board.module';
@@ -14,8 +14,17 @@ import openAIConfig from './config/openAI.config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JWTAuthGuard } from './auth/jwt-auth.guard';
 import { RoleGuard } from './guards/role.guard';
-import { DevelopmentMiddleware } from './middlewares/on-development.middleware';
 import { BaseUrlInterceptor } from './intercepters/base-value.intercepter';
+import { UserEntity } from './entities/user.entity';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { MailModule } from './mail/mail.module';
+import { NotificationEntity } from './entities/notification.entity';
+import { ImageEntity } from './entities/image.entity';
+import { ClaimEntity } from './entities/claim.entity';
+import { CommentEntity } from './entities/comment.entity';
+import { FriendRequestEntity } from './entities/friends-request.entity';
+import { PostEntity } from './entities/post.entity';
+import { NotificationModule } from './routes/notification/notification.module';
 
 @Module({
   imports: [
@@ -37,26 +46,51 @@ import { BaseUrlInterceptor } from './intercepters/base-value.intercepter';
           username: configService.get('postgres.username'),
           password: configService.get('postgres.password'),
           database: configService.get('postgres.database'),
-          autoLoadEntities: true,
+          entities: [
+            ClaimEntity,
+            CommentEntity,
+            FriendRequestEntity,
+            ImageEntity,
+            NotificationEntity,
+            PostEntity,
+            UserEntity,
+          ],
         };
-        if (configService.get('STAGE') === 'local') {
+        if (process.env.NODE_ENV === 'development') {
           obj = Object.assign(obj, {
-            syncronize: true,
+            syncronize: false,
             logging: true,
+          });
+        } else {
+          obj = Object.assign(obj, {
+            syncronize: false,
+            logging: false,
           });
         }
         return obj;
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 600,
+        limit: 100,
+      },
+    ]),
     BoardModule,
     UserModule,
     AuthModule,
     ClaimModule,
     SearchModule,
+    MailModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JWTAuthGuard,
@@ -71,15 +105,4 @@ import { BaseUrlInterceptor } from './intercepters/base-value.intercepter';
     },
   ],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(DevelopmentMiddleware)
-      .forRoutes(
-        { path: '/signup', method: RequestMethod.ALL },
-        { path: '/login', method: RequestMethod.ALL },
-        { path: '/board', method: RequestMethod.ALL },
-        { path: '/user', method: RequestMethod.ALL },
-      );
-  }
-}
+export class AppModule {}

@@ -1,1 +1,144 @@
-<!-- 개시물은 스택 오버플로우처럼 질문만가능  -->
+<%- include('header') %>
+    <div
+      class="main-text text-center mt-xxl-5 mt-xl-3 mb-0 lh-sm main-container"
+    >
+      <div class="community-container mx-xl-auto mb-xl-5" id="community-container">
+        <div
+          class="community-posts-container mx-xl-auto"
+        >
+          <ul class="community-post-list" id="post-list">
+          </ul>
+            <div class="row">
+              <div
+              class="text-center"
+              id="loader-in-element"
+              style="display: none"
+              >
+                  <span class="loader-in-element"></span>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="write-post-button-container" onclick="redirectUser('/board/post-create-form')">
+        <img src="./img/post-icon.svg" alt="" />
+      </div>
+
+    </div>
+<%- include('footer') %>
+<script src="/scripts/non-publick.js"></script>
+<script>
+    let current_page = 1;
+    let isItOnEnd = false;
+    let isOnLoading = false;
+
+    async function setPostsWidgets( post ){
+        const postList = document.getElementById('post-list');
+        const {id, title, description, createdAt, updatedAt, likes, thumbnail, commentsCount, user} = post;
+        const response = await getFile(`/board/thumbnail?filename=${thumbnail}`);
+        const blob = new Blob([response.data], {
+            type: response.headers['content-type'],
+        });
+        const thumbnailUrl = URL.createObjectURL(blob);
+
+        const profileResponse = await getFile(`/user/get-profile-picture?id=${user.id}`);
+        const profileBlob = new Blob([profileResponse.data], {
+            type: response.headers['content-type'],
+        });
+        const profileUrl = URL.createObjectURL(profileBlob);
+
+        const userData = await sendPostRequest('/user',{
+            id: user.id,
+            userFields: ['username']
+        });
+
+        const li = document.createElement('li');
+        li.className = 'item mx-auto';
+
+        let displayLikes = `${likes}`;
+        //turn to k, m, etc 
+        if (likes >= 1000){
+            displayLikes = `${Math.floor(likes / 1000)} K`;
+        }else if (likes >= 1000000){
+            displayLikes = `${Math.floor(likes / 1000000)} M`;
+        }else if (likes >= 1000000000){
+            displayLikes = `${Math.floor(likes / 1000000000)} B`;
+        }
+
+
+        let displayComments = `${commentsCount}`;
+        //turn to k, m, etc 
+        if (commentsCount >= 1000){
+            displayComments = `${Math.floor(commentsCount / 1000)} K`;
+        }else if (commentsCount >= 1000000){
+            displayComments = `${Math.floor(commentsCount / 1000000)} M`;
+        }else if (commentsCount >= 1000000000){
+            displayComments = `${Math.floor(commentsCount / 1000000000)} B`;
+        }
+        
+        li.innerHTML = `
+              <div class="card post-card mb-3" onclick="redirectUser('/board/post/:id=${id}')"">
+                <img src=${thumbnailUrl} class="card-img-top" alt="..." />
+                <div class="card-body">
+                  <div class="card-user-info text-center">
+                    <div class="card-user-profile mx-auto">
+                      <img
+                        src=${profileUrl}
+                        alt=""
+                      />
+                    </div>
+                    <div class="card-username">${userData.username}</div>
+                  </div>
+
+                  <h5 class="card-title">${title}</h5>
+                  <p class="card-text mb-2">${description}</p>
+                  <div class="like-comment mb-2">
+                    <div class="likes">
+                      <a class="like-button">
+                        <img src="./img/heart-fill.png" />
+                      </a>
+                      <div class="count">${displayLikes}</div>
+                    </div>
+                    <div class="comments">
+                      <a>
+                        <img src="./img/comment.png" />
+                      </a>
+                      <div class="count">${displayComments}</div>
+                    </div>
+                  </div>
+                  <p class="card-small-text">Created at: ${createdAt.substring(0, 10)}</p>
+                </div>
+              </div>
+        `;
+        
+        postList.appendChild(li);
+    }
+
+    async function setPosts(page) {
+        isOnLoading = true;
+        const posts = await sendGetRequest('/board/posts', {
+            page: page,
+            limit: 20
+        });
+        console.log(posts);
+        if (posts.length === 0) {
+            isItOnEnd = true;
+        }
+        // show loading at the bottom
+        document.getElementById("loader-in-element").style.display = 'flex'
+        for (const post of posts) {
+            await setPostsWidgets(post);
+        }
+        // hide loading
+        document.getElementById("loader-in-element").style.display = 'none'
+        isOnLoading = false;
+    }
+    setPosts(current_page);
+
+    window.addEventListener('scroll', async () => {
+        const item_list = document.getElementById('community-container')
+        if ((window.innerHeight / 2) + window.scrollY >= item_list.offsetHeight && !isItOnEnd && !isOnLoading) {
+            current_page++;
+            setPosts(current_page);
+        }
+    });
+</script>

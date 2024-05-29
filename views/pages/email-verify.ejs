@@ -1,0 +1,60 @@
+<%- include('form-header') %>
+<div class="container" id="container">
+  <div class="header-text text-center">
+    <div class="decorator">--</div>
+    이메일 인증 중입니다...
+    <div class="decorator">--</div>
+  </div>
+  <div class="description-text text-center">
+    이메일 인증에는 최대 10초 정도 걸립니다. <br />
+    이메일 인증후 현재 탭은 자동으로 닫힙니다. <br />
+    이메일 인증이 완료 될때까지 탭을 닫지 말아주세요.
+  </div>
+  <div id="widget" class="finished-widget text-center mx-auto">왼료!</div>
+  <div class="description-text text-center">현재 탭은 3초 뒤에 닫힙니다.</div>
+  <%- include('../components/loading-on-screen.ejs') %>
+</div>
+<%- include('../components/alert-popup.ejs') %>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/scripts/non-publick.js"></script>
+<%- include('form-footer') %>
+<script>
+  function showLoadingOnScreen() {
+    const loading = document.getElementById('loader-on-screen');
+    loading.style.display = 'block';
+  }
+  function hideLoadingOnScreen() {
+    const loading = document.getElementById('loader-on-screen');
+    loading.style.display = 'none';
+  }
+  function showResult() {
+    const container = document.getElementById('widget');
+    container.style.display = 'block';
+  }
+  function hideResult() {
+    const container = document.getElementById('widget');
+    container.style.display = 'none';
+  }
+  async function sendToken() {
+    try {
+      showLoadingOnScreen();
+      const url = window.location.href;
+      const parts = url.split('/');
+      const token = {
+        token: parts[parts.length - 1],
+      };
+      await sendPostRequest('auth/email-verification', token);
+    } catch (error) {
+      alertPopup(error.response.data.message);
+    } finally {
+      hideLoadingOnScreen();
+      showResult();
+      setTimeout(function () {
+        window.close();
+      }, 3000);
+    }
+  }
+  hideResult();
+  showLoadingOnScreen();
+  sendToken();
+</script>

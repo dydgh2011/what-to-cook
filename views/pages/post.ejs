@@ -1,0 +1,409 @@
+<%- include('header') %>
+<div class="main-text text-center mt-xxl-5 mt-xl-3 mb-0 lh-sm main-container">
+  <div class="post-container mx-xl-auto mb-xl-5 pb-0">
+    <div class="post-container-row">
+      <div class="post-thumbnail">
+        <img src="" id="post-thumbnail" />
+      </div>
+    </div>
+    <div class="post-container-row post-userinfo">
+      <div class="post-user-profile-picture">
+        <a id="post-user-profile-picture-button">
+          <img src="" id="post-user-profile-picture" />
+        </a>
+      </div>
+      <div class="post-username mx-auto"></div>
+    </div>
+    <div class="post-container-row">
+      <div class="post-title"></div>
+    </div>
+    <div class="post-container-row">
+      <div class="post-description"></div>
+    </div>
+    <div class="post-container-row">
+      <div class="post-content-container">
+        <div class="post-content"></div>
+      </div>
+    </div>
+    <div class="post-container-row">
+      <div class="likes in-post-likes mx-auto" id="likes">
+        <img id="likes-icon" src="" alt="" />
+        <div id="likes-count" class="in-post-likes-count"></div>
+      </div>
+    </div>
+    <div class="post-container-row comments-row">
+      <div class="comments-inputs">
+        <textarea
+          class="comment-input"
+          name="comment"
+          id="comment-input"
+          placeholder="댓글을 입력해 주세요."
+          oninput="adjustingTextareaHeight()"
+          maxlength="100"
+          minlength="1"
+          required
+        ></textarea>
+        <button
+          class="comment-submit"
+          id="submit-button"
+          onclick="submitButtonEvent()"
+        >
+          submit
+        </button>
+      </div>
+      <ul class="comments-container" id="comment-list"></ul>
+    </div>
+  </div>
+  <div
+    class="edit-post-button-container"
+    onclick="redirectUser(`/board/post-update-form/:id=${window.location.href.split('=')[1]}`)"
+    style="display: none"
+  >
+    <img src="./img/post-edit-icon.svg" alt="" />
+  </div>
+  <div
+    class="delete-post-button-container"
+    onclick="deletePostPopup()"
+    style="display: none"
+  >
+    <img src="./img/delete-icon.svg" alt="" />
+  </div>
+</div>
+<%- include('footer') %>
+<script src="/scripts/non-publick.js"></script>
+<script>
+  const tx_height = document.getElementById('comment-input').style.height;
+  let liked = false;
+  let currentLike = 0;
+
+  function adjustingTextareaHeight() {
+    const textarea = document.getElementById('comment-input');
+    const submitButton = document.getElementById('submit-button');
+    if (textarea.scrollHeight <= tx_height) {
+      textarea.style.height = 0;
+      textarea.style.height = tx_height + 'px';
+      submitButton.style.height = tx_height + 'px';
+    } else {
+      textarea.style.height = 0;
+      textarea.style.height = textarea.scrollHeight + 'px';
+      submitButton.style.height = textarea.scrollHeight + 'px';
+    }
+  }
+  adjustingTextareaHeight();
+
+  async function setPostUser(id) {
+    let username = '';
+    try {
+      const user = await sendPostRequest('/user', {
+        id: id,
+        userFields: ['username'],
+      });
+      await setImage(
+        `/user/get-profile-picture?id=${user.id}`,
+        'post-user-profile-picture',
+        'profile-picture',
+      );
+      username = user.username;
+    } catch (error) {
+      errorPopup(error.response.data.message);
+    }
+    document.querySelector('.post-username').innerHTML = username;
+    document
+      .getElementById('post-user-profile-picture-button')
+      .setAttribute('href', `/user/profile/${id}`);
+  }
+  async function setComments(comment) {
+    const commentList = document.getElementById('comment-list');
+
+    const { id, content, createdAt, user } = comment;
+
+    const response = await getFile(`/user/get-profile-picture?id=${user.id}`);
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    });
+    const profileUrl = URL.createObjectURL(blob);
+
+    const userInfo = await sendPostRequest('/user', {
+      id: user.id,
+      userFields: ['username'],
+    });
+    const username = userInfo.username;
+
+    const li = document.createElement('li');
+    li.className = 'comment';
+    li.innerHTML = `
+              <div class="comment-user-profile">
+                <a
+                  href="/user/profile/${user.id}"
+                >
+                  <img src="${profileUrl}" />
+                </a>
+              </div>
+              <div class="comment-contents">
+                <div class="comment-user-name">
+                  ${username} <span class="comment-date">${createdAt.substring(0, 10)}</span>
+                </div>
+                <div class="comment-content">
+                  ${content}
+                </div>
+              </div>
+        `;
+
+    commentList.appendChild(li);
+  }
+  async function setPost(postId) {
+    const payload = await getPayloadAccessToken();
+    const post = await sendGetRequest('/board/post', {
+      id: postId,
+    });
+    const {
+      id,
+      title,
+      content,
+      description,
+      createdAt,
+      updatedAt,
+      likes,
+      thumbnail,
+      user,
+      comments,
+    } = post;
+    const postList = document.getElementById('post-list');
+    const response = await getFile(`/board/thumbnail?filename=${thumbnail}`);
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    });
+    const thumbnailUrl = URL.createObjectURL(blob);
+    document.getElementById('post-thumbnail').setAttribute('src', thumbnailUrl);
+    document.querySelector('.post-title').innerHTML = title;
+    document.querySelector('.post-description').innerHTML = description;
+    document.querySelector('.post-content').innerHTML = content;
+    await setPostUser(user.id);
+
+    if (payload.id === user.id) {
+      document.querySelector('.edit-post-button-container').style.display =
+        'block';
+      document.querySelector('.delete-post-button-container').style.display =
+        'block';
+    } else {
+      document.querySelector('.edit-post-button-container').style.display =
+        'none';
+      document.querySelector('.delete-post-button-container').style.display =
+        'none';
+    }
+
+    // order comments by data
+    if (comments.length === 0) {
+      document.getElementById('comment-list').style.display = 'none';
+    } else {
+      comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      for (const comment of comments) {
+        await setComments(comment);
+      }
+    }
+    liked = await sendGetRequest('/board/isLicked', {
+      postId: window.location.href.split('=')[1],
+    });
+    if (liked) {
+      document
+        .getElementById('likes-icon')
+        .setAttribute('src', './img/heart-fill.png');
+    } else {
+      document
+        .getElementById('likes-icon')
+        .setAttribute('src', './img/heart-empty.png');
+    }
+
+    let displayLikes = `${likes}`;
+    //turn to k, m, etc
+    if (likes >= 1000) {
+      displayLikes = `${Math.floor(likes / 1000)} K`;
+    } else if (likes >= 1000000) {
+      displayLikes = `${Math.floor(likes / 1000000)} M`;
+    } else if (likes >= 1000000000) {
+      displayLikes = `${Math.floor(likes / 1000000000)} B`;
+    }
+    currentLike = likes;
+    document.getElementById('likes-count').innerText = displayLikes;
+  }
+  setPost(window.location.href.split('=')[1]);
+
+  // set comments
+  // if there is no comments, display non ('') comment-input  submit-button
+
+  // write comments (write api) send request and if success, add same comment in the list and set display flex or block
+  // disable submit button when loading
+  function disableSubmitButton() {
+    setTimeout(() => {
+      document.getElementById('submit-button').disabled = true;
+      setTimeout(() => {
+        document.getElementById('submit-button').disabled = false;
+      }, 1000);
+    }, 50);
+  }
+
+  async function addComment(content) {
+    const postId = window.location.href.split('=')[1];
+    showLoading();
+    try {
+      await sendPostRequest('/board/comment', {
+        postId: postId,
+        content: content,
+      });
+    } catch (error) {
+      hideLoading();
+      errorPopup(error.response.data.message);
+      return;
+    }
+    hideLoading();
+
+    const commentList = document.getElementById('comment-list');
+
+    const payload = await getPayloadAccessToken();
+    const response = await getFile(
+      `/user/get-profile-picture?id=${payload.id}`,
+    );
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    });
+    const uerProfileUrl = URL.createObjectURL(blob);
+
+    const dateObj = new Date();
+    const month = dateObj.getUTCMonth() + 1; // months from 1-12
+    const day = dateObj.getUTCDate();
+    const year = dateObj.getUTCFullYear();
+
+    const createdAt = year + '-' + month + '-' + day;
+    const li = document.createElement('li');
+    li.className = 'comment';
+    li.innerHTML = `
+              <div class="comment-user-profile">
+                <a
+                  href="/user/profile/${payload.id}"
+                >
+                  <img src="${uerProfileUrl}" />
+                </a>
+              </div>
+              <div class="comment-contents">
+                <div class="comment-user-name">
+                  ${payload.username} <span class="comment-date">${createdAt}</span>
+                </div>
+                <div class="comment-content">
+                  ${content}
+                </div>
+              </div>
+        `;
+
+    if (commentList.firstChild) {
+      commentList.insertBefore(li, commentList.firstChild);
+    } else {
+      commentList.appendChild(li);
+    }
+
+    document.getElementById('comment-list').style.display = 'block';
+  }
+
+  // submit setup
+  function submitButtonEvent() {
+    event.preventDefault();
+
+    const button = document.getElementById('submit-button');
+    const txtarea = document.getElementById('comment-input');
+
+    if (txtarea.value.length < 1) {
+      alertPopup('최소 1글자 이상 입력해주세요.');
+      return;
+    } else if (txtarea.value.length > 50) {
+      alertPopup('최대 100글자까지 입력 가능합니다.');
+      return;
+    } else if (button.disabled) {
+      alertPopup('처리중 입니다. 잠시만 기다려주세요.');
+      return;
+    } else {
+      addComment(txtarea.value);
+      disableSubmitButton();
+    }
+  }
+
+  // enter key event
+  document
+    .getElementById('comment-input')
+    .addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        submitButtonEvent();
+      }
+    });
+
+  async function likeButtonAction() {
+    if (liked) {
+      try {
+        const result = await sendPostRequest('/board/dislike', {
+          postId: window.location.href.split('=')[1],
+        });
+      } catch (error) {
+        errorPopup(error.response.data.message);
+        return;
+      }
+      liked = false;
+      --currentLike;
+      document
+        .getElementById('likes-icon')
+        .setAttribute('src', './img/heart-empty.png');
+    } else {
+      try {
+        const result = await sendPostRequest('/board/like', {
+          postId: window.location.href.split('=')[1],
+        });
+      } catch (error) {
+        errorPopup(error.response.data.message);
+        return;
+      }
+      liked = true;
+      ++currentLike;
+      document
+        .getElementById('likes-icon')
+        .setAttribute('src', './img/heart-fill.png');
+    }
+
+    let displayLikes = `${currentLike}`;
+    if (currentLike >= 1000) {
+      displayLikes = `${Math.floor(currentLike / 1000)} K`;
+    } else if (currentLike >= 1000000) {
+      displayLikes = `${Math.floor(currentLike / 1000000)} M`;
+    } else if (currentLike >= 1000000000) {
+      displayLikes = `${Math.floor(currentLike / 1000000000)} B`;
+    }
+
+    document.getElementById('likes-count').innerText = displayLikes;
+  }
+  //add likes
+  document.getElementById('likes').addEventListener('click', likeButtonAction);
+
+  async function deletePost() {
+    const postId = window.location.href.split('=')[1];
+    try {
+      showLoading();
+      await sendDeleteRequest('/board', { id: postId });
+      hideLoading();
+      messagePopup('개시물이 삭제 되었습니다', () => {
+        window.location.href = '/community';
+      });
+    } catch (error) {
+      hideLoading();
+      errorPopup(error.response.data.message);
+    }
+  }
+
+  // show delete message
+  function deletePostPopup() {
+    questionPopup(
+      '정말 해당 개시물을 삭제 하시겠습니까?',
+      '네',
+      '아니요',
+      deletePost,
+      () => {
+        return;
+      },
+    );
+  }
+</script>

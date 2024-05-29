@@ -1,0 +1,85 @@
+<%- include('form-header') %>
+<div class="container" id="container">
+  <div class="header-text text-center">
+    <div class="decorator">--</div>
+    사용자님의 이메일로 인증 이메일을 보냈습니다
+    <div class="decorator">--</div>
+  </div>
+
+  <div class="description-text text-center mb-3">
+    이메일 인증을 위해 이메일을 확인해 주세요. <br />
+    이메일 전송은 최대 3분이 걸릴 수 있습니다.
+  </div>
+  <div class="description-text text-center">
+    만약 이메일을 못 받으셨다면 아래의 버튼을 눌러 주세요.
+  </div>
+  <div class="text-center">
+    <button class="resend-button px-4 mb-4" onclick="resend()">재전송</button>
+  </div>
+
+  <div class="description-text text-center">
+    이메일 인증 후 아래의 버튼을 눌러 주세요.
+  </div>
+  <div class="text-center">
+    <button class="check-button px-4" onclick="check()">확인</button>
+  </div>
+</div>
+<%- include('../components/loading.ejs') %> <%-
+include('../components/alert-popup.ejs') %>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<%- include('form-footer') %>
+<script>
+  async function checkExp() {
+    const AT = await getAccessToken();
+    const RT = await getAccessToken();
+    if (AT && RT) {
+      const isATExpired = await isAccessTokenExpired();
+      const isRTExpired = await isRefreshTokenExpired();
+      if (isRTExpired) {
+        window.location.href = '/sign';
+      } else if (isATExpired) {
+        try {
+          await sendGetRequest('/auth/refresh');
+          return;
+        } catch (refreshError) {
+          errorPopup(refresherror.response.data.message);
+          window.location.href = '/sign';
+          return;
+        }
+      }
+    } else {
+      window.location.href = '/sign';
+    }
+  }
+  checkExp();
+
+  async function resend() {
+    try {
+      showLoading();
+      await sendGetRequest('auth/resend-verification-email');
+      messagePopup('재전송 완료');
+    } catch (error) {
+      alertPopup(error.response.data.message);
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function check() {
+    try {
+      showLoading();
+      const result = await sendGetRequest('auth/check-email-verification');
+      if (result) {
+        // get new tokens
+        await sendGetRequest('/auth/refresh');
+        window.location.href = '/';
+      } else {
+        alertPopup('아직 이메일 인증이 완료되지 않았습니다.');
+      }
+    } catch (error) {
+      alertPopup(error.response.data.message);
+    } finally {
+      hideLoading();
+    }
+  }
+</script>

@@ -5,12 +5,7 @@
 >
   <p class="text-start main-text mb-0">분명 냉장고에</p>
   <div class="search text-center container" id="container">
-    <form
-      action="/search"
-      method="get"
-      id="myForm"
-      onsubmit="disableSubmitButton();"
-    >
+    <form action="/search" id="myForm">
       <textarea
         id="textarea"
         spellcheck="false"
@@ -47,6 +42,7 @@
 </div>
 <%- include('../components/alert-popup.ejs') %>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<%- include('footer') %>
 <script>
   // disable submit button when loading
   function disableSubmitButton() {
@@ -58,30 +54,13 @@
     }, 50);
   }
 
-  //error popup
-  function errorPopup(message) {
-    var modal = new bootstrap.Modal(
-      document.getElementById('exampleModalCenter'),
-    );
-    document.getElementsByClassName('modal-title')[0].textContent = '--ERROR--';
-    document.getElementsByClassName('modal-body')[0].textContent = message;
-    modal.show();
-  }
-
-  function alertPopup(message) {
-    var modal = new bootstrap.Modal(
-      document.getElementById('exampleModalCenter'),
-    );
-    document.getElementsByClassName('modal-title')[0].textContent = '--ALERT--';
-    document.getElementsByClassName('modal-body')[0].textContent = message;
-    modal.show();
-  }
-
-  // submit button event
+  // submit setup
   function submitButtonEvent() {
     event.preventDefault();
+
     const button = document.getElementById('submit-button');
     const txtarea = document.getElementById('textarea');
+
     if (txtarea.value.length < 1) {
       alertPopup('최소 1글자 이상 입력해주세요.');
       return;
@@ -254,4 +233,3 @@
     document.getElementById('textarea').placeholder = '계란, 소금, 후추, 당근';
   });
 </script>
-<%- include('footer') %>

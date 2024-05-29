@@ -36,21 +36,15 @@ ENV GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID
 ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_DSN=$SENTRY_DSN
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY package.json ./
-COPY package-lock.json ./
+COPY package*.json ./
+RUN npm install
 
-COPY yarn.lock ./
+COPY . .
 
-RUN yarn install --prod
-
-COPY ./dist ./src
-
-COPY ./views ./views
-
-COPY ./public ./public
+RUN npm run build
 
 EXPOSE 80
 
-CMD ["node", "src/main.js"]
+CMD [ "node", "dist/main" ]
