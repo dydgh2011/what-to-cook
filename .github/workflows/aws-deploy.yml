@@ -9,84 +9,17 @@ jobs:
     name: Deploy to EC2
     runs-on: ubuntu-latest
     environment: production
-    env:
-      BASE_URL: ${{ secrets.BASE_URL }}
-      EC2_KEY: ${{ secrets.EC2_KEY }}
-      EC2_HOST: ${{ secrets.EC2_HOST }}
-      EC2_USER: ${{ secrets.EC2_USER }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_SYNC: ${{ secrets.DB_SYNC }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      GOOGLE_SEARCH_API_KEY: ${{ secrets.GOOGLE_SEARCH_API_KEY }}
-      GOOGLE_SEARCH_ENGINE_ID: ${{ secrets.GOOGLE_SEARCH_ENGINE_ID }}
-      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-      JWT_KEY: ${{ secrets.JWT_KEY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Docker
+      - name: Connect to EC2 SSH
         run: |
           set -e
-          sudo apt-get update
-          sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-          apt-cache policy docker-ce
-          sudo apt-get install docker-ce
-          sudo systemctl status docker
-
-      - name: Install Node & Yarn & Next.js CLI
-        run: |
-          set -e
-          sudo apt-get update
-          sudo apt-get install -y build-essential
-          sudo apt-get install curl
-          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-          sudo apt-get update
-          sudo apt-get install nodejs -y
-          node --version
-          npm install -g yarn
-          yarn install
-
-      - name: Build Project To Make ./dist Folder
-        run: |
-          set -e
+          echo "$EC2_KEY" > private_key && chmod 600 private_key
           ls
           pwd
-          yarn build
-
-      - name: Build Docker Image With ENV
-        # change this to use --secret to improve security
-        run: |
-          set -e
-          docker build \
-          --build-arg NODE_ENV=production \
-          --build-arg BASE_URL=$BASE_URL \
-          --build-arg DB_HOST=$DB_HOST \
-          --build-arg DB_PORT=$DB_PORT \
-          --build-arg DB_USERNAME=$DB_USERNAME \
-          --build-arg DB_PASSWORD=$DB_PASSWORD \
-          --build-arg DB_NAME=$DB_NAME \
-          --build-arg DB_SYNC=$DB_SYNC \
-          --build-arg OPENAI_API_KEY=$OPENAI_API_KEY \
-          --build-arg JWT_KEY=$JWT_KEY \
-          --build-arg JWT_EXPIRES_IN=$JWT_EXPIRES_IN \
-          --build-arg API_DOCS_USER=$API_DOCS_USER \
-          --build-arg API_DOCS_PASSWORD=$API_DOCS_PASSWORD \
-          --build-arg GOOGLE_SEARCH_API_KEY=$GOOGLE_SEARCH_API_KEY \
-          --build-arg GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID \
-          --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
-          --build-arg SENTRY_DSN=$SENTRY_DSN \
-          -t what-to-cook-image .
-          docker save -o ./server-image.tar what-to-cook-image
-          ls
+          echo ${{secrets.DB_USERNAME}}
 
       - name: Connect to EC2 SSH
         run: |
@@ -96,54 +29,62 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
             ls
             pwd
+            mkdir ${{secrets.DB_USERNAME}}
           '
 
-      - name: Terminate Current Docker Container
-        run: |
-          set -e
-          ls
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            if [ -n "$(sudo docker ps -a -q)" ]; then
-                sudo docker stop $(sudo docker ps -a -q)
-            fi
-          '
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            if [ -n "$(sudo docker container ls -a -q)" ]; then
-                sudo docker rm $(sudo docker container ls -a -q)
-            fi
-          '
+      # - name: Terminate Current Docker Container
+      #   run: |
+      #     set -e
+      #     ls
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       if [ -n "$(sudo docker ps -a -q)" ]; then
+      #           sudo docker stop $(sudo docker ps -a -q)
+      #       fi
+      #     '
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       if [ -n "$(sudo docker container ls -a -q)" ]; then
+      #           sudo docker rm $(sudo docker container ls -a -q)
+      #       fi
+      #     '
 
-      - name: Remove Old Docker Image
-        run: |
-          set -e
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            if [ -n "$(sudo docker image ls -a -q)" ]; then
-                sudo docker rmi $(sudo docker image ls -a -q)
-            fi
-          '
+      # - name: Remove Old Docker Image
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       if [ -n "$(sudo docker image ls -a -q)" ]; then
+      #           sudo docker rmi $(sudo docker image ls -a -q)
+      #       fi
+      #     '
 
-      - name: Send Image To EC2
-        run: |
-          set -e
-          scp -o StrictHostKeyChecking=no -i private_key server-image.tar ${EC2_USER}@${EC2_HOST}:/home/ubuntu
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            pwd
-            ls
-          '
+      # - name: Remove Old src directory
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       sudo rm -r -f what-to-cook
+      #     '
 
-      - name: Run Docker Container With New Image
-        run: |
-          set -e
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            sudo docker load -i server-image.tar
-            df -h
-            sudo docker run -d -p 80:80 --name server what-to-cook-image
-            sudo rm server-image.tar
-          '
+      # - name: Send files To EC2
+      #   run: |
+      #     set -e
+      #     scp -r -o StrictHostKeyChecking=no -i private_key /home/runner/work/what-to-cook/what-to-cook ${EC2_USER}@${EC2_HOST}:/home/ubuntu
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       pwd
+      #       ls
+      #     '
 
-      - name: Check If Container is Running
-        run: |
-          set -e
-          ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-            sudo docker ps
-          '
+      # - name: Run Docker Container With New Image
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       sudo docker load -i server-image.tar
+      #       df -h
+      #       sudo docker run -d -p 80:80 --name server what-to-cook-image
+      #       sudo rm server-image.tar
+      #     '
+
+      # - name: Check If Container is Running
+      #   run: |
+      #     set -e
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #       sudo docker ps
+      #     '
