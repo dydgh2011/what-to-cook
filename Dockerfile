@@ -70,8 +70,6 @@ RUN yarn install
 
 COPY . .
 
-RUN npm run build
-
 EXPOSE 80
 
-CMD [ "node", "dist/main" ]
+CMD ["yarn", "run", "start:prod"]
