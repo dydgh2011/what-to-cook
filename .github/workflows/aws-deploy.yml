@@ -13,78 +13,92 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Connect to EC2 SSH
-        run: |
-          set -e
-          echo "$EC2_KEY" > private_key && chmod 600 private_key
-          ls
-          pwd
-          echo ${{secrets.DB_USERNAME}}
-
-      - name: Connect to EC2 SSH
+      - name: set EC2 key
         run: |
           set -e
           echo "${{secrets.EC2_KEY}}" > private_key && chmod 600 private_key
+
+      - name: Terminate Current Docker Container
+        run: |
+          set -e
           ls
           ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
-            ls
-            pwd
-            mkdir ${{secrets.DB_USERNAME}}
+            if [ -n "$(sudo docker ps -a -q)" ]; then
+                sudo docker stop $(sudo docker ps -a -q)
+            fi
+          '
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
+            if [ -n "$(sudo docker container ls -a -q)" ]; then
+                sudo docker rm $(sudo docker container ls -a -q)
+            fi
           '
 
-      # - name: Terminate Current Docker Container
-      #   run: |
-      #     set -e
-      #     ls
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #       if [ -n "$(sudo docker ps -a -q)" ]; then
-      #           sudo docker stop $(sudo docker ps -a -q)
-      #       fi
-      #     '
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #       if [ -n "$(sudo docker container ls -a -q)" ]; then
-      #           sudo docker rm $(sudo docker container ls -a -q)
-      #       fi
-      #     '
+      - name: Remove Old Docker Image
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
+            if [ -n "$(sudo docker image ls -a -q)" ]; then
+                sudo docker rmi $(sudo docker image ls -a -q)
+            fi
+          '
 
-      # - name: Remove Old Docker Image
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #       if [ -n "$(sudo docker image ls -a -q)" ]; then
-      #           sudo docker rmi $(sudo docker image ls -a -q)
-      #       fi
-      #     '
+      - name: Remove Old src directory
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
+            sudo rm -r -f what-to-cook
+          '
 
-      # - name: Remove Old src directory
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #       sudo rm -r -f what-to-cook
-      #     '
+      - name: Send files To EC2
+        run: |
+          set -e
+          scp -r -o StrictHostKeyChecking=no -i private_key /home/runner/work/what-to-cook/what-to-cook ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}}:/home/ubuntu
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
+            pwd
+            ls
+          '
 
-      # - name: Send files To EC2
+      # - name: Build Docker Image With ENV
       #   run: |
       #     set -e
-      #     scp -r -o StrictHostKeyChecking=no -i private_key /home/runner/work/what-to-cook/what-to-cook ${EC2_USER}@${EC2_HOST}:/home/ubuntu
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #       pwd
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
+      #       sudo docker build \
+      #       --build-arg NODE_ENV=production \
+      #       --build-arg DB_HOST=${{secrets.DB_HOST}} \
+      #       --build-arg DB_PORT=${{secrets.DB_PORT}} \
+      #       --build-arg DB_USERNAME=${{secrets.DB_USERNAME}} \
+      #       --build-arg DB_PASSWORD=${{secrets.DB_PASSWORD}} \
+      #       --build-arg DB_NAME=${{secrets.DB_NAME}} \
+      #       --build-arg DB_SYNC=${{secrets.DB_SYNC}} \
+      #       --build-arg OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}} \
+      #       --build-arg JWT_KEY=${{secrets.JWT_KEY}} \
+      #       --build-arg JWT_EXPIRES_IN=${{secrets.JWT_EXPIRES_IN}} \
+      #       --build-arg API_DOCS_USER=${{secrets.API_DOCS_USER}} \
+      #       --build-arg API_DOCS_PASSWORD=${{secrets.API_DOCS_PASSWORD}} \
+      #       --build-arg GOOGLE_SEARCH_API_KEY=${{secrets.GOOGLE_SEARCH_API_KEY}} \
+      #       --build-arg GOOGLE_SEARCH_ENGINE_ID=${{secrets.GOOGLE_SEARCH_ENGINE_ID}} \
+      #       --build-arg SENTRY_AUTH_TOKEN=${{secrets.SENTRY_AUTH_TOKEN}} \
+      #       --build-arg SENTRY_DSN=${{secrets.SENTRY_DSN}} \
+      #       --build-arg GOOGLE_AUTH_ID=${{secrets.GOOGLE_AUTH_ID}} \
+      #       --build-arg GOOGLE_AUTH_SECRET=${{secrets.GOOGLE_AUTH_SECRET}} \
+      #       --build-arg FACEBOOK_AUTH_ID=${{secrets.FACEBOOK_AUTH_ID}} \
+      #       --build-arg FACEBOOK_AUTH_SECRET=${{secrets.FACEBOOK_AUTH_SECRET}} \
+      #       --build-arg TWITTER_COMSUMER_ID=${{secrets.TWITTER_COMSUMER_ID}} \
+      #       --build-arg TWITTER_COMSUMER_SECRET=${{secrets.TWITTER_COMSUMER_SECRET}} \
+      #       --build-arg TWITTER_AUTH_ID=${{secrets.TWITTER_AUTH_ID}} \
+      #       --build-arg TWITTER_AUTH_SECRET=${{secrets.TWITTER_AUTH_SECRET}} \
+      #       --build-arg MAIL_USER=${{secrets.MAIL_USER}} \
+      #       --build-arg MAIL_PASS=${{secrets.MAIL_PASS}} \
+      #       --build-arg SUPPORT_EMAIL=${{secrets.SUPPORT_EMAIL}} \
+      #       --build-arg SALT_ROUNDS=${{secrets.SALT_ROUNDS}} \
+      #       -t what-to-cook-image .
+      #       docker save -o ./server-image.tar what-to-cook-image
       #       ls
-      #     '
-
-      # - name: Run Docker Container With New Image
-      #   run: |
-      #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
-      #       sudo docker load -i server-image.tar
-      #       df -h
-      #       sudo docker run -d -p 80:80 --name server what-to-cook-image
-      #       sudo rm server-image.tar
       #     '
 
       # - name: Check If Container is Running
       #   run: |
       #     set -e
-      #     ssh -o StrictHostKeyChecking=no -i private_key ${EC2_USER}@${EC2_HOST} '
+      #     ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
       #       sudo docker ps
       #     '
