@@ -1,0 +1,91 @@
+<%- include('header') %>
+<div class="main-text text-center mt-xxl-5 mt-xl-3 mb-0 lh-sm main-container">
+  <div class="notification-container mx-xl-auto mb-xl-5">
+    <div class="notification-container-header">Notifications</div>
+    <div class="notification-list-container">
+      <ul class="notification-list" id="notification-list"></ul>
+      <div class="no-notifications" id="no-notifications" style="display: none">
+        알림이 없어요...
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('footer') %>
+<script src="/scripts/non-publick.js"></script>
+<script>
+  async function deleteNotification(id) {
+    try {
+      showLoading();
+      await sendDeleteRequest('/notification', { id: id });
+      hideLoading();
+      var notificationElement = document.getElementById(`notification-${id}`);
+      notificationElement.parentNode.removeChild(notificationElement);
+      checkNotificationCount();
+    } catch (error) {
+      hideLoading();
+      errorPopup(error.response.data.message);
+    }
+  }
+
+  async function setNotification(notification) {
+    const notificationList = document.getElementById('notification-list');
+
+    const { id, image, title, createdAt, content } = notification;
+
+    const response = await getFile(
+      `/notification/get-notification-image?filename=${image}`,
+    );
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    });
+    const notificationImage = URL.createObjectURL(blob);
+
+    const li = document.createElement('li');
+    li.className = 'notification';
+    li.id = `notification-${id}`;
+    li.innerHTML = `
+          <div class="notification-image-container">
+            <img class="notification-image" src="${notificationImage}" alt="" />
+          </div>
+          <div class="notification-contents">
+            <div class="notification-title">
+              ${title}
+              <span class="notification-date">${createdAt.substring(0, 10)}</span>
+            </div>
+            <div class="notification-content">
+              ${content}
+            </div>
+          </div>
+          <div class="notification-delete-button-container">
+            <img src="/img/delete-widget.svg" alt="" id="notification-delete-button-${id}" />
+          </div>
+        `;
+
+    notificationList.appendChild(li);
+
+    document
+      .getElementById(`notification-delete-button-${id}`)
+      .addEventListener('click', () => {
+        deleteNotification(id);
+      });
+  }
+
+  async function setNotifications() {
+    const notifications = await sendGetRequest('/notification');
+    for (const notification of notifications) {
+      await setNotification(notification);
+    }
+    checkNotificationCount();
+  }
+
+  function checkNotificationCount() {
+    var notificationList = document.getElementById('notification-list');
+    var numberOfNotifications = notificationList.childElementCount;
+    if (numberOfNotifications < 1) {
+      document.getElementById('no-notifications').style.display = 'block';
+    }
+  }
+
+  setNotifications();
+</script>

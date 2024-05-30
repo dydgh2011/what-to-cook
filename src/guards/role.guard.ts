@@ -32,7 +32,7 @@ export class RoleGuard implements CanActivate {
       return true;
     }
 
-    if (role === 'user') {
+    if (role === 'USER') {
       return true;
     } else {
       // admin

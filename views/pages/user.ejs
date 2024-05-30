@@ -1,0 +1,205 @@
+<%- include('header') %>
+<div class="main-text text-center mt-xxl-5 mt-xl-3 mb-0 lh-sm main-container">
+  <div class="info-container mx-xl-auto mb-xl-5" id="info-container">
+    <div class="row">
+      <div class="user-cover-picture">
+        <img src="" id="user-cover-picture" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-3 col-12 user-profile-picture">
+        <a id="profile-link">
+          <img src="" id="user-profile-picture" />
+        </a>
+      </div>
+      <div class="col-lg-5 col-12">
+        <div class="user-info">
+          <div class="user-name" id="user-name"></div>
+          <div class="user-tastes" id="user-tastes"></div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-12">
+        <div class="user-widgets">
+          <a
+            class="nav-link widget-link user-exists-widget-link"
+            href="/friends"
+          >
+            <div class="widget-img-container">
+              <img
+                class="friends widget"
+                id="friends"
+                src="./img/friends-icon.svg"
+                alt="friends-icon"
+              />
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div
+        class="user-posts-container mx-auto"
+        style="margin: 30px; margin-top: 50px"
+        id="user-posts-container"
+      >
+        <ul class="list" id="post-list"></ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="text-center" id="loader-in-element" style="display: none">
+        <span class="loader-in-element"></span>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('footer') %>
+<script src="/scripts/non-publick.js"></script>
+<script>
+  let current_page = 1;
+  let isItOnEnd = false;
+  let isOnLoading = false;
+
+  async function setInfos() {
+    let id = '';
+    let username = '';
+    let tastes = '';
+    try {
+      id = window.location.href.split('/').pop();
+      setImage(
+        `/user/get-profile-picture?id=${id}`,
+        'user-profile-picture',
+        'profile-picture',
+      );
+      setImage(
+        `/user/get-cover-picture?id=${id}`,
+        'user-cover-picture',
+        'cover-picture',
+      );
+      const user = await sendPostRequest('/user', {
+        id: id,
+        userFields: ['username', 'tastes'],
+      });
+      console.log(user);
+      username = user.username;
+      tastes = user.tastes;
+    } catch (error) {
+      errorPopup(error.response.data.message);
+    }
+    document
+      .getElementById('profile-link')
+      .setAttribute('href', `/user/profile/${id}`);
+    document.getElementById('user-name').innerText = username;
+    document.getElementById('user-tastes').innerText = tastes;
+  }
+
+  async function setPostsWidgets(post) {
+    const postList = document.getElementById('post-list');
+    const {
+      id,
+      title,
+      description,
+      createdAt,
+      updatedAt,
+      likes,
+      thumbnail,
+      commentsCount,
+    } = post;
+    const response = await getFile(`/board/thumbnail?filename=${thumbnail}`);
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    });
+    const thumbnailUrl = URL.createObjectURL(blob);
+
+    const li = document.createElement('li');
+    li.className = 'item mx-auto';
+
+    let displayLikes = `${likes}`;
+    //turn to k, m, etc
+    if (likes >= 1000) {
+      displayLikes = `${Math.floor(likes / 1000)} K`;
+    } else if (likes >= 1000000) {
+      displayLikes = `${Math.floor(likes / 1000000)} M`;
+    } else if (likes >= 1000000000) {
+      displayLikes = `${Math.floor(likes / 1000000000)} B`;
+    }
+
+    let displayComments = `${commentsCount}`;
+    //turn to k, m, etc
+    if (commentsCount >= 1000) {
+      displayComments = `${Math.floor(commentsCount / 1000)} K`;
+    } else if (commentsCount >= 1000000) {
+      displayComments = `${Math.floor(commentsCount / 1000000)} M`;
+    } else if (commentsCount >= 1000000000) {
+      displayComments = `${Math.floor(commentsCount / 1000000000)} B`;
+    }
+
+    li.innerHTML = `
+            <div class="card post-card mb-3" onclick="redirectUser('/board/post/:id=${id}')">
+                <img src="${thumbnailUrl}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">${title}</h5>
+                    <p class="card-text mb-2">${description} ...</p>
+                    <div class="like-comment mb-2">
+                      <div class="likes">
+                        <a class="like-button">
+                          <img src="./img/heart-fill.png" />
+                        </a>
+                        <div class="count">${displayLikes}</div>
+                      </div>
+                      <div class="comments">
+                        <a>
+                          <img src="./img/comment.png" />
+                        </a>
+                        <div class="count">${displayComments}</div>
+                      </div>
+                    </div>
+                    <p class="card-small-text">Created at: ${createdAt.substring(0, 10)}</p>
+                </div>
+            </div>
+        `;
+
+    postList.appendChild(li);
+  }
+
+  async function setPosts(page) {
+    isOnLoading = true;
+    const id = window.location.href.split('/').pop();
+    const posts = await sendGetRequest('/board/posts', {
+      page: page,
+      limit: 10,
+      userId: id,
+    });
+    if (posts.length === 0 && page === 1) {
+      document.getElementById('user-posts-container').innerHTML = `
+            <div style='color:#cac7c7'>
+                아직 개시물이 없어요...
+            </div>
+            `;
+    }
+    if (posts.length === 0) {
+      isItOnEnd = true;
+    }
+    // show loading at the bottom
+    document.getElementById('loader-in-element').style.display = 'flex';
+    for (const post of posts) {
+      await setPostsWidgets(post);
+    }
+    // hide loading
+    document.getElementById('loader-in-element').style.display = 'none';
+    isOnLoading = false;
+  }
+  setInfos();
+  setPosts(current_page);
+
+  window.addEventListener('scroll', async () => {
+    const item_list = document.getElementById('info-container');
+    if (
+      window.innerHeight / 2 + window.scrollY >= item_list.offsetHeight &&
+      !isItOnEnd &&
+      !isOnLoading
+    ) {
+      current_page++;
+      setPosts(current_page);
+    }
+  });
+</script>

@@ -1,0 +1,139 @@
+<%- include('form-header') %>
+<div class="container" id="container">
+  <div class="form-container sign-up-container">
+    <form id="signUpForm" action="/auth/signup">
+      <h1>회원가입</h1>
+      <div class="social-container">
+        <a href="/auth/google" class="image-link">
+          <img src="/img/google.png" class="social my-auto"></img>
+        </a>
+        <a href="/auth/facebook" class="image-link">
+          <img src="/img/facebook.png" class="social my-auto"></img>
+        </a>
+        <a href="/auth/twitter" class="image-link">
+          <img src="/img/twitter.png" lass="social my-auto"></img>
+        </a>
+      </div>
+      <input name="username" type="username" placeholder="닉네임" maxlength="50" required/>
+      <input name="verificationValue" type="verificationValue" placeholder="아이디" maxlength="50" required/>
+      <input name="email" type="email" placeholder="이메일" />
+      <input name="password" type="password" placeholder="비밀번호" maxlength="50" minlength="8" required/>
+      <div class="ask onSmall">
+        이미 계정이 있으신가요? <a id="signInS" class="pf aLink">로그인</a>
+      </div>
+      <button class="submit-button">회원가입</button>
+    </form>
+  </div>
+  <div class="form-container sign-in-container">
+    <form id="signInForm" action="/auth/signin">
+      <h1>로그인</h1>
+      <div class="social-container">
+        <a href="/auth/google" class="image-link">
+          <img src="/img/google.png" class="social my-auto"></img>
+        </a>
+        <a href="/auth/facebook" class="image-link">
+          <img src="/img/facebook.png" class="social my-auto"></img>
+        </a>
+        <a href="/auth/twitter" class="image-link">
+          <img src="/img/twitter.png"  class="social my-auto"></img>
+        </a>      
+      </div>
+      <input name="localId" type="localId" placeholder="아이디"/>
+      <input name="password" type="password" placeholder="비밀번호"/>
+      <div class="ask">
+        비밀번호를 잊어버리셨나요? <a onclick="resetPassword()" class="pf aLink" style="cursor: pointer;">비밀번호 재설정</a>
+      </div>
+      <div class="ask onSmall">
+        계정이 없으신가요? <a id="signUpS" class="pf aLink">회원가입</a>
+      </div>
+      <button class="submit-button">로그인</button>
+    </form>
+  </div>
+  <div class="overlay-container">
+    <div class="overlay">
+      <div class="overlay-panel overlay-left">
+        <h1>이미 계정이 있으신가요?</h1>
+        <p>다시 오셔서 환영해요!</p>
+        <button class="ghost" id="signIn">로그인</button>
+      </div>
+      <div class="overlay-panel overlay-right">
+        <h1>처음 이신가요?</h1>
+        <p>회원가입 하셔서 레시피를 공유해 보세요!</p>
+        <button class="ghost" id="signUp">회원가입</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('form-footer') %>
+<script>
+  const signUpButton = document.getElementById('signUp');
+  const signInButton = document.getElementById('signIn');
+  const container = document.getElementById('container');
+
+  signUpButton.addEventListener('click', () => {
+    container.classList.add('right-panel-active');
+  });
+
+  signInButton.addEventListener('click', () => {
+    container.classList.remove('right-panel-active');
+  });
+
+  const signUpButtonS = document.getElementById('signUpS');
+  const signInButtonS = document.getElementById('signInS');
+
+  signUpButtonS.addEventListener('click', () => {
+    container.classList.add('right-panel-active');
+  });
+
+  signInButtonS.addEventListener('click', () => {
+    container.classList.remove('right-panel-active');
+  });
+
+  async function handleFormSubmission(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const jsonData = {};
+    formData.forEach((value, key) => {
+      jsonData[key] = value;
+    });
+
+    // check validation
+    
+    showLoading();
+    try{
+      const result = await sendPostRequest(event.target.action, jsonData);
+      hideLoading();
+      if (event.target.id === 'signUpForm') {
+          window.location.href = '/email-verification';
+      } else if (event.target.id === 'signInForm') {
+          window.location.href = '/';
+      }
+    }catch(error){
+      hideLoading();
+      errorPopup(error.response.data.message);
+    }
+  }
+
+  document.getElementById('signUpForm').addEventListener('submit', handleFormSubmission);
+  document.getElementById('signInForm').addEventListener('submit', handleFormSubmission);
+
+  async function resetPassword(){
+    const localIdInput = document.getElementsByName('localId')[0];
+    const localIdValue = localIdInput.value;
+    const data = {
+      userId: localIdValue,
+    }
+    showLoading();
+    try{
+      const result = await sendPostRequest('auth/send-reset-password-email',data);
+    }catch(error){
+      hideLoading();
+      errorPopup(error.response.data.message);
+    }finally{
+      hideLoading();
+      messagePopup('비밀번호 재설정 이메일 전송 완료')
+    }
+  }
+</script>

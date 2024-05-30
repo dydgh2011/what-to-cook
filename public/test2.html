@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Masonry Layout</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <style>
+      .list {
+        column-count: 3;
+        column-gap: 20px;
+        padding: 20px;
+      }
+
+      .item {
+        display: inline-block;
+        width: 100%;
+        break-inside: avoid;
+        margin-bottom: 20px;
+      }
+
+      .card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #eee;
+        font-size: 40px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      /* for reset */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
+          'Segoe UI', Arial, sans-serif;
+      }
+
+      body,
+      ul,
+      li,
+      p {
+        margin: 0;
+        padding: 0;
+      }
+
+      ul {
+        list-style: none;
+      }
+    </style>
+  </head>
+  <body>
+    <ul class="list">
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content.
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example te Some quick example text to build on the card
+              title and make up the bulk of the card's conten Some quick example
+              text to build on the card title and make up the bulk of the card's
+              conten Some quick example text to build on the card title and make
+              up the bulk of the card's contenxt to build on the card title and
+              make up the bulk of the card's content.
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example text to bu Some quick example text to build on
+              the card title and make up the bulk of the card's contenild on the
+              card title and make up the bulk of the card's content.
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content. Some quick example text to build on
+              the card title and make up the bulk of the card's conten Some
+              quick example text to build on the card title and make up the bulk
+              of the card's conten
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              bulk of the card's content.
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content Some quick example text to build on the
+              card title and make up the bulk of the card's conten Some quick
+              example text to build on the card title and make up the bulk of
+              the card's conten Some quick example text to build on the card
+              title and make up the bulk of the card's conten Some quick example
+              text to build on the card title and make up the bulk of the card's
+              conten Some quick example text to build on the card title and make
+              up the bulk of the card's conten Some quick example text to build
+              on the card title and make up the bulk of the card's conten.
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example text to bu Some quick example text to build on
+              the card title and make up the bulk of the card's conten Some
+              quick example text to build on the card title and make up the bulk
+              of the card's contenild on the card title and make up the bulk of
+              the card's content.
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+      <li class="item">
+        <div class="card">
+          <img
+            src="./img/what-to-eat-favicon-black.svg"
+            class="card-img-top"
+            alt="..."
+            style="height: 20px"
+          />
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 1rem">Card title</h5>
+            <p class="card-text" style="font-size: 1rem">
+              Some quick example text to build on the card title and make up the
+              bulk of the card's content. Some quick example text to build on
+              the card title and make up the bulk of the card's conten Some
+              quick example text to build on the card title and make up the bulk
+              of the card's conten Some quick example text to build on the card
+              title and make up the bulk of the card's conten Some quick example
+              text to build on the card title and make up the bulk of the card's
+              conten
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" style="font-size: 1rem">
+              Cras justo odio
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Dapibus ac facilisis in
+            </li>
+            <li class="list-group-item" style="font-size: 1rem">
+              Vestibulum at eros
+            </li>
+          </ul>
+          <div class="card-body">
+            <a href="#" class="card-link" style="font-size: 1rem">Card link</a>
+            <a href="#" class="card-link" style="font-size: 1rem"
+              >Another link</a
+            >
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

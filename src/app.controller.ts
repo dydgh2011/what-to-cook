@@ -1,87 +1,202 @@
-import { AuthService } from './auth/auth.service';
+import { Controller, Get, Render } from '@nestjs/common';
 import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Render,
-  Request,
-  Response,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AppService } from './app.service';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { UserService } from './routes/user/user.service';
-import { CreateUserDto } from './routes/user/dto/create-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Public } from './decorators/public.decorator';
+import { IsPage } from './decorators/page.decorator';
+import { MailService } from './mail/mail.service';
+import { TokenPayload } from './auth/dto/req.dto';
+import { ClaimEntity } from './entities/claim.entity';
 
+@ApiExtraModels(TokenPayload, ClaimEntity)
+@ApiTags('Pages')
 @Controller()
-@ApiTags('App')
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private authService: AuthService,
-    private userService: UserService,
-  ) {}
+  constructor(private mailService: MailService) {}
 
+  @ApiOperation({
+    summary: 'Index Page',
+    description: 'it simply returns index page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
   @Public()
-  @Get()
+  @IsPage()
+  @Get('')
   @Render('pages/index')
-  root(@Request() req) {
-    return { user: req.user };
-  }
+  async root() {}
 
+  @ApiOperation({
+    summary: 'About Page',
+    description: 'it returns about page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
   @Public()
+  @IsPage()
   @Get('about')
   @Render('pages/about')
-  about() {
-    return { user: null };
-  }
+  about() {}
 
+  @ApiOperation({
+    summary: 'Sign Up/In Page',
+    description: 'it returns Sign Up/In page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
   @Public()
-  @Get('login')
-  login(@Request() req, @Response() res) {
-    if (req.headers['authorization']) {
-      return res.status(302).redirect('/');
-    }
-    return res.render('login', {
-      message: 'login form',
-    });
-  }
+  @IsPage()
+  @Get('sign')
+  @Render('pages/sign')
+  sign() {}
 
+  @ApiOperation({
+    summary: 'Settings Page',
+    description: 'it returns Settings page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
   @Public()
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async logIn(@Request() req) {
-    return await this.authService.logIn(req.user);
-  }
-  // FIXME: implement the following
-  //login with google (post)
-  //login with twitter (post)
-  //login with facebook (post)
+  @IsPage()
+  @Get('settings')
+  @Render('pages/settings')
+  settings() {}
 
+  @ApiOperation({
+    summary: 'Notifications Page',
+    description: 'it returns Notifications page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
   @Public()
-  @Get('signup')
-  signUpPage(@Request() req, @Response() res) {
-    if (req.headers['authorization']) {
-      return res.status(302).redirect('/');
-    }
-    return res.render('signup', {
-      message: 'signup form',
-    });
-  }
+  @IsPage()
+  @Get('notifications')
+  @Render('pages/notifications')
+  notifications() {}
 
+  @ApiOperation({
+    summary: 'Profile Page',
+    description: 'it returns Profile page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
   @Public()
-  @Post('signup')
-  async signUp(@Body(new ValidationPipe()) data: CreateUserDto) {
-    return await this.authService.signUp(data);
-  }
+  @IsPage()
+  @Get('profile')
+  @Render('pages/profile')
+  profile() {}
 
-  //implement refresh token feature
-  // @Post('refresh')
-  // async refresh(@Headers('authorization') authorization: string) {
-  //   const token = /Bearer\/s(.+)/.exec(authorization)[1];
-  // }
+  @ApiOperation({
+    summary: 'Claim Page',
+    description: 'it returns Claim page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('claim')
+  @Render('pages/claim')
+  claim() {}
+
+  @ApiOperation({
+    summary: 'Email Verification Page',
+    description: 'it returns Email Verification page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('email-verification')
+  @Render('pages/email-verification-page')
+  emailVerification() {}
+
+  @ApiOperation({
+    summary: 'Email Verification Notification Page',
+    description: 'it returns Email Verification Notification page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('email-verification-notification')
+  @Render('pages/email-verification-notification')
+  emailVerificationNotification() {}
+
+  @ApiOperation({
+    summary: 'Community Page',
+    description: 'it returns Community page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('community')
+  @Render('pages/community')
+  community() {}
+
+  @ApiOperation({
+    summary: 'Friends Page',
+    description: 'it returns Friends page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('friends')
+  @Render('pages/friends')
+  friends() {}
+
+  //Policy ------------------------------------------------
+  @ApiOperation({
+    summary: 'Privacy Policy Page',
+    description: 'it returns Privacy Policy page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('privacy-policy')
+  @Render('pages/privacy-policy')
+  privacyPolicy() {}
+
+  @ApiOperation({
+    summary: 'Terms of Service Page',
+    description: 'it returns Terms of Service page',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The rendered page has been successfully sent.',
+  })
+  @Public()
+  @IsPage()
+  @Get('terms-of-service')
+  @Render('pages/terms-of-service')
+  termsOfService() {}
 }

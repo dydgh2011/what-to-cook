@@ -1,0 +1,128 @@
+<%- include('header') %>
+<div class="main-text text-center mt-5 mx-5 mb-0 lh-sm main-container">
+    <div class="mb-2">
+    Claim
+    <div class="row">
+        <div class="description-text">
+        버그, 오류 등을 발견하실 경우 아래의 폼을 작성하여 제출해 주세요.
+        </div>
+    </div>
+    <div class="row form-container mx-auto px-2 px-md-5 mt-md-4">
+        <form class="claim-form p-md-5 py-4" id="claim-form" role="form">
+        <div class="row mt-4 mb-1">
+            <div class="col-md-6 form-group">
+            <label for="form_OS">운영체제</label>
+            <input
+                id="form_OS"
+                type="OS"
+                name="OS"
+                class="form-control"
+                placeholder="Windows, IOS, Android ..."
+                autocomplete="off"
+            />
+            </div>
+            <div class="col-md-6 form-group mt-md-0 mt-4">
+            <label for="form_browser">브라우저</label>
+            <input
+                id="form_browser"
+                type="browser"
+                name="browser"
+                class="form-control"
+                placeholder="Chrome, Safari, Edge ..."
+                autocomplete="off"
+            />
+            </div>
+        </div>
+        <div class="row mt-4 mb-1">
+            <div class="col-md-12 form-group">
+            <label for="form_message">설명</label>
+            <textarea
+                id="form_message"
+                name="message"
+                class="form-control"
+                placeholder="에러에 대한 설명을 입력해 주세요"
+                rows="4"
+                autocomplete="off"
+            ></textarea>
+            </div>
+        </div>
+        <div class="row mt-4 mb-1">
+            <div class="col-md-12">
+            <input
+                id="submit-button"
+                type="submit"
+                class="btn pt-2 form-button px-5"
+                value="제출"
+                onclick="submitButtonEvent()"
+            />
+            </div>
+        </div>
+        </form>
+    </div>
+    </div>
+</div>
+<%- include('footer') %>
+<script>
+  // submit setup
+  async function submitButtonEvent() {
+    event.preventDefault();
+
+    const button = document.getElementById('submit-button');
+    const form = document.getElementById('claim-form');
+    const os_input = document.getElementById('form_OS').value;
+    const browser_input = document.getElementById('form_browser').value;
+    const message_input = document.getElementById('form_message').value;
+
+    if (os_input < 1) {
+      alertPopup('OS를 입력해 주세요');
+      return;
+    } else if (browser_input < 1) {
+      alertPopup('사용 중이신 브라우저를 입력해 주세요');
+      return;
+    } else if (message_input  < 1) {
+      alertPopup('해당 오류/버그에 대해서 설명해 주세요');
+      return;
+    } else {
+      document.getElementById('submit-button').disabled = true;
+      showLoading();
+      const data = {
+        os: os_input,
+        browser: browser_input,
+        message: message_input
+      }
+      try{
+        const result = await sendPostRequest('/claim', data);
+        console.log(result);
+        messagePopup('제출 완료, 제보해 주셔서 감사합니다! :)')
+      }catch(error){
+        errorPopup(error.response.data.message);
+      }
+        document.getElementById('submit-button').disabled = false;
+        hideLoading();
+    }
+  }
+
+  // enter key event
+  document
+    .getElementById('form_OS')
+    .addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        submitButtonEvent();
+      }
+    });
+  document
+    .getElementById('form_browser')
+    .addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        submitButtonEvent();
+      }
+    });
+  document
+    .getElementById('form_message')
+    .addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        submitButtonEvent();
+      }
+    });
+
+</script>

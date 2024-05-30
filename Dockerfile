@@ -1,6 +1,7 @@
 FROM node:20
 
 ARG NODE_ENV
+ARG BASE_URL
 ARG DB_HOST
 ARG DB_PORT
 ARG DB_USERNAME
@@ -18,6 +19,7 @@ ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_DSN
 
 ENV NODE_ENV=$NODE_ENV
+ENV BASE_URL=$BASE_URL
 ENV DB_HOST=$DB_HOST
 ENV DB_PORT=$DB_PORT
 ENV DB_USERNAME=$DB_USERNAME
@@ -34,19 +36,15 @@ ENV GOOGLE_SEARCH_ENGINE_ID=$GOOGLE_SEARCH_ENGINE_ID
 ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_DSN=$SENTRY_DSN
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY package.json ./
-COPY yarn.lock ./
+COPY package*.json ./
+RUN npm install
 
-RUN yarn install
+COPY . .
 
-COPY ./dist ./src
-
-COPY ./views ./views
-
-COPY ./public ./public
+RUN npm run build
 
 EXPOSE 80
 
-CMD ["node", "src/main.js"]
+CMD [ "node", "dist/main" ]

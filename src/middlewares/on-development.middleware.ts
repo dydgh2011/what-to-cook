@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class DevelopmentMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  use(req: Request, res: Response, _next: NextFunction) {
     return res.render('pages/on-development', { user: null });
   }
 }

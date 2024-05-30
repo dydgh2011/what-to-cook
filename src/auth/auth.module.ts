@@ -9,13 +9,19 @@ import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from 'src/routes/user/user.module';
-import { RefreshTokenEntity } from 'src/entities/refresh-token.entity';
-
+import { FriendRequestEntity } from 'src/entities/friends-request.entity';
+import { AuthController } from './auth.controller';
+import { GoogleAuthStrategy } from './google.strategy';
+import { FacebookAuthStrategy } from './facebook.strategy';
+import { TwitterAuthStrategy } from './twitter.strategy';
+import { MailModule } from 'src/mail/mail.module';
+import { MailService } from 'src/mail/mail.service';
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserEntity, FriendRequestEntity]),
     PassportModule,
     UserModule,
-    TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity]),
+    MailModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
@@ -27,7 +33,17 @@ import { RefreshTokenEntity } from 'src/entities/refresh-token.entity';
       },
     }),
   ],
-  providers: [AuthService, LocalStrategy, UserService, JwtStrategy],
+  providers: [
+    AuthService,
+    UserService,
+    MailService,
+    LocalStrategy,
+    JwtStrategy,
+    GoogleAuthStrategy,
+    FacebookAuthStrategy,
+    TwitterAuthStrategy,
+  ],
   exports: [AuthService],
+  controllers: [AuthController],
 })
 export class AuthModule {}

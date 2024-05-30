@@ -1,0 +1,61 @@
+<%- include('form-header') %>
+<div class="container" id="container">
+  <div class="header-text text-center">
+    <div class="decorator">--</div>
+    이메일 인증을 완료해 주세요
+    <div class="decorator">--</div>
+  </div>
+
+  <div class="description-text text-center mb-3">
+    이메일 인증을 위해 이메일을 확인해 주세요. <br />
+    이메일 전송은 최대 3분이 걸릴 수 있습니다.
+  </div>
+  <div class="description-text text-center mt-5">
+    이메일 인증을 위해 아래의 버튼을 눌러 주세요.
+  </div>
+  <div class="text-center">
+    <button class="resend-button px-4 mb-4 mt-2" onclick="send()">
+      인증 이메일 전송
+    </button>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<%- include('form-footer') %>
+<script>
+  async function checkExp() {
+    const AT = await getAccessToken();
+    const RT = await getAccessToken();
+    if (AT && RT) {
+      const isATExpired = await isAccessTokenExpired();
+      const isRTExpired = await isRefreshTokenExpired();
+      if (isRTExpired) {
+        window.location.href = '/sign';
+      } else if (isATExpired) {
+        try {
+          await sendGetRequest('/auth/refresh');
+          return;
+        } catch (refreshError) {
+          errorPopup(refresherror.response.data.message);
+          window.location.href = '/sign';
+          return;
+        }
+      }
+    } else {
+      window.location.href = '/sign';
+    }
+  }
+  checkExp();
+
+  async function send() {
+    try {
+      showLoading();
+      await sendGetRequest('auth/resend-verification-email');
+      messagePopup('재전송 완료');
+    } catch (error) {
+      alertPopup(error.response.data.message);
+    } finally {
+      hideLoading();
+      window.location.href = '/email-verification';
+    }
+  }
+</script>

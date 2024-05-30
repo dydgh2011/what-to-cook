@@ -1,0 +1,397 @@
+<%- include('header') %>
+<div class="main-text mt-xxl-5 mb-0 lh-sm main-container">
+  <div class="post-form-container mx-xl-auto mb-xxl-5">
+    <div class="post-form-title text-center">User Settings</div>
+    <form action="" class="post-form">
+      <label>배경 사진 : </label>
+      <div class="file-upload-container">
+        <input
+          id="coverPicture-upload-name"
+          class="custom-file-upload upload-name"
+          value="첨부파일"
+          placeholder="첨부파일"
+          readonly
+        />
+        <label for="coverPicture" class="custom-file-upload-button"
+          >파일찾기</label
+        >
+        <input type="file" id="coverPicture" />
+        <img
+          id="coverPicture-imagePreview"
+          src="#"
+          alt="Image Preview"
+          style="
+            display: none;
+            width: 200px;
+            margin-left: 20px;
+            object-fit: contain;
+          "
+        />
+      </div>
+
+      <label>프로필 사진 : </label>
+      <div class="file-upload-container">
+        <input
+          id="profilePicture-upload-name"
+          class="custom-file-upload upload-name"
+          value="첨부파일"
+          placeholder="첨부파일"
+          readonly
+        />
+        <label for="profilePicture" class="custom-file-upload-button"
+          >파일찾기</label
+        >
+        <input type="file" id="profilePicture" />
+        <img
+          id="profilePicture-imagePreview"
+          src="#"
+          alt="Image Preview"
+          style="
+            display: none;
+            width: 200px;
+            margin-left: 20px;
+            object-fit: contain;
+          "
+        />
+      </div>
+
+      <label for="username">이름 : </label>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        maxlength="50"
+        minlength="1"
+        required
+        spellcheck="false"
+      />
+
+      <label for="tastes">음식 취향 : </label>
+      <input
+        type="text"
+        name="tastes"
+        id="tastes"
+        maxlength="200"
+        minlength="1"
+        required
+        spellcheck="false"
+      />
+
+      <div class="apply-button-container">
+        <button class="setting-apply-button setting-button" id="submit-button">
+          변경사항 적용
+        </button>
+      </div>
+
+      <div class="toggle-container">
+        <div class="button-container">
+          <button
+            class="reset-password-button setting-button"
+            id="language-setting"
+          >
+            언어 설정
+          </button>
+        </div>
+        <div
+          class="button-container"
+          id="reset-password-button-container"
+          style="display: none"
+        >
+          <button
+            class="reset-password-button setting-button"
+            id="reset-password"
+          >
+            비밀번호 재설정
+          </button>
+        </div>
+        <div class="button-container">
+          <button class="logout-button setting-button" id="logout">
+            로그아웃
+          </button>
+        </div>
+        <div class="button-container">
+          <button
+            class="delete-account-button setting-button"
+            id="delete-account"
+          >
+            계정 삭제
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<%- include('footer') %>
+<script src="/scripts/non-publick.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $('#profilePicture').on('change', function () {
+    var file = this.files[0];
+    var validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    var maxSizeInMB = 2;
+    var maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (file) {
+      if (!validImageTypes.includes(file.type)) {
+        errorPopup(
+          'Invalid file type. Please select an image file (jpeg, png, webp).',
+        );
+        $('#profilePicture').val('');
+        $('#profilePicture-upload-name').val('첨부파일');
+        $('#profilePicture-imagePreview').css('display', 'none');
+        return;
+      }
+
+      if (file.size > maxSizeInBytes) {
+        alert('File size exceeds 2MB. Please select a smaller file.');
+        $('#profilePicture').val('');
+        $('#profilePicture-upload-name').val('첨부파일');
+        $('#profilePicture-imagePreview').css('display', 'none');
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#profilePicture-imagePreview').attr('src', e.target.result);
+        $('#profilePicture-imagePreview').css('display', 'inline-block');
+      };
+      reader.readAsDataURL(file);
+
+      var fileName = $('#profilePicture').val().split('\\').pop();
+      $('#profilePicture-upload-name').val(fileName);
+    }
+  });
+
+  $('#coverPicture').on('change', function () {
+    var file = this.files[0];
+    var validImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    var maxSizeInMB = 2;
+    var maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (file) {
+      if (!validImageTypes.includes(file.type)) {
+        errorPopup(
+          'Invalid file type. Please select an image file (jpeg, png, webp).',
+        );
+        $('#coverPicture').val('');
+        $('#coverPicture-upload-name').val('첨부파일');
+        $('#coverPicture-imagePreview').css('display', 'none');
+        return;
+      }
+
+      if (file.size > maxSizeInBytes) {
+        alert('File size exceeds 2MB. Please select a smaller file.');
+        $('#coverPicture').val('');
+        $('#coverPicture-upload-name').val('첨부파일');
+        $('#coverPicture-imagePreview').css('display', 'none');
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#coverPicture-imagePreview').attr('src', e.target.result);
+        $('#coverPicture-imagePreview').css('display', 'inline-block');
+      };
+      reader.readAsDataURL(file);
+
+      var fileName = $('#coverPicture').val().split('\\').pop();
+      $('#coverPicture-upload-name').val(fileName);
+    }
+  });
+</script>
+
+<script>
+  document
+    .getElementById('submit-button')
+    .addEventListener('click', submitButtonEvent);
+
+  function disableSubmitButton() {
+    setTimeout(() => {
+      document.getElementById('submit-button').disabled = true;
+      setTimeout(() => {
+        document.getElementById('submit-button').disabled = false;
+      }, 4000);
+    }, 50);
+  }
+
+  // submit setup
+  async function submitButtonEvent(event) {
+    event.preventDefault();
+
+    // Get values
+    const username = document.getElementById('username').value;
+    const tastes = document.getElementById('tastes').value;
+
+    // Check validation
+    if (username.length < 1) {
+      alertPopup('이름을 최소 1글자 이상 입력해주세요.');
+      return;
+    }
+    if (username.length > 25) {
+      alertPopup('이름은 최대 50글자 입니다.');
+      return;
+    }
+    if (tastes.length > 50) {
+      alertPopup('음식 취향은 최대 200글자 입니다.');
+      return;
+    }
+
+    // Set request body
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('tastes', tastes);
+
+    const profileInput = document.getElementById('profilePicture');
+    if (profileInput.files[0]) {
+      formData.append('profilePicture', profileInput.files[0]);
+    }
+    const coverPictureInput = document.getElementById('coverPicture');
+    if (coverPictureInput.files[0]) {
+      formData.append('coverPicture', coverPictureInput.files[0]);
+    }
+
+    const button = document.getElementById('submit-button');
+    if (!button.disabled) {
+      // Send request
+      disableSubmitButton();
+      showLoading();
+      try {
+        await sendPutRequest('/user/', formData);
+        hideLoading();
+        messagePopup('유저 정보 업데이트 완료', () => {
+          window.location.href = '/profile';
+        });
+      } catch (error) {
+        hideLoading();
+        errorPopup(error.response.data.message);
+      }
+    }
+  }
+</script>
+
+<script>
+  async function setUser() {
+    const payload = await getPayloadAccessToken();
+
+    const user = await sendPostRequest('/user', {
+      id: payload.id,
+      userFields: ['username', 'tastes'],
+    });
+    const { username, tastes } = user;
+    document.getElementById('username').value = username;
+    document.getElementById('tastes').value = tastes;
+  }
+  setUser();
+</script>
+
+<script>
+  let userVerificationValue = '';
+  async function isLocalUser() {
+    const payload = await getPayloadAccessToken();
+    const user = await sendPostRequest('/user', {
+      id: payload.id,
+      userFields: ['verificationMethod', 'verificationValue'],
+    });
+    if (user.verificationMethod === 'LOCAL') {
+      isLocalUser = true;
+      document.getElementById('reset-password-button-container').style.display =
+        'block';
+    }
+    userVerificationValue = user.verificationValue;
+  }
+
+  async function resetPassword(event) {
+    event.preventDefault();
+    const data = {
+      userId: userVerificationValue,
+    };
+    showLoading();
+    try {
+      const result = await sendPostRequest(
+        'auth/send-reset-password-email',
+        data,
+      );
+      hideLoading();
+      messagePopup('비밀번호 재설정 이메일 전송 완료');
+    } catch (error) {
+      hideLoading();
+      errorPopup(error.response.data.message);
+    }
+  }
+  isLocalUser();
+  document
+    .getElementById('reset-password')
+    .addEventListener('click', resetPassword);
+
+  async function logOut() {
+    event.preventDefault();
+    await deleteTokens();
+    window.location.href = '/';
+  }
+
+  function logOutPopup() {
+    event.preventDefault();
+    questionPopup('정말 로그아웃 하시겠습니까?', '네', '아니요', logOut, () => {
+      return;
+    });
+  }
+  document.getElementById('logout').addEventListener('click', logOutPopup);
+
+  async function deleteUser() {
+    try {
+      showLoading();
+      await sendDeleteRequest('/user');
+      await deleteTokens();
+      hideLoading();
+      messagePopup('계정이 삭제 되었습니다', () => {
+        window.location.href = '/';
+      });
+    } catch (error) {
+      hideLoading();
+      errorPopup(error.response.data.message);
+    }
+  }
+
+  function deleteUserPopup() {
+    event.preventDefault();
+    questionPopup(
+      '정말 해당 계정을 삭제 하시겠습니까?',
+      '네',
+      '아니요',
+      deleteUser,
+      () => {
+        return;
+      },
+    );
+  }
+  document
+    .getElementById('delete-account')
+    .addEventListener('click', deleteUserPopup);
+
+  function setLanguage(language) {
+    document.cookie = `language=${language}`;
+    changeLanguage();
+  }
+  function languageSettingPopUp() {
+    event.preventDefault();
+    questionPopup(
+      `어느 언어를 사용하시겠습니까?  <br> Which language would you like to use?`,
+      '영어 / English',
+      '한국어 / Korean',
+      () => {
+        setLanguage('english');
+        return;
+      },
+      () => {
+        setLanguage('korean');
+        return;
+      },
+    );
+  }
+  // document.getElementById('language-setting').addEventListener('click',languageSettingPopUp);
+  document.getElementById('language-setting').addEventListener('click', () => {
+    event.preventDefault();
+    messagePopup('--ON DEVELOPMENT--');
+  });
+</script>

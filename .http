@@ -1,101 +1,43 @@
 
-# get all the posts
-GET http://localhost:3000/board
-###
+POST http://localhost/user
 
-# get a post by id
-GET http://localhost:3000/board/16
-###
-
-# create a new post
-POST http://localhost:3000/board
-Content-Type: application/json
-
+content-type: application/json
 {
-  "userId": 1,   
-  "title": "My first post",
-  "content": "This is my first post"
+    "name": "",
+    "email": ""    
 }
 ###
-
-# update a post
-PUT http://localhost:3000/board/1
-Content-Type: application/json
-
-{
-  "title": "aa",
-  "content": "aaa"
-}
-###
-
-# delete a post
-DELETE http://localhost:3000/board/1
-###
-
-
-
-# get all the users
-GET http://localhost:3000/user
-###
-
-# login
-POST   http://localhost:3000/login
+POST http://localhost/login
 content-type: application/json
 
 {
   "username": "1MarkNamSecond",
   "password": "1Nam14135647!"
 }
-###
-
-# check jwt token validation
-GET http://localhost:3000/user/5
-content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTE2OTQ0ODMsImV4cCI6MTcxMTY5NjI4M30.t8PnrCP7865I96g9f9zCuIF7-8Bnpb2wUgISoovnfIA
-
 
 ###
-GET http://localhost:3000/test
+POST http://localhost/user/friend-request/2
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTE2OTQ0ODMsImV4cCI6MTcxMTY5NjI4M30.t8PnrCP7865I96g9f9zCuIF7-8Bnpb2wUgISoovnfIA
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTQ0NDA0NzIsImV4cCI6MTcxNDQ0MjI3Mn0.0QKNNgiHlM25AlQ7jZLtOHH7srxih9ehyWiQlR-r6FU
 ###
-GET http://localhost:3000/user/1
-content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTE3NDk1NDcsImV4cCI6MTcxMTc1MTM0N30.KCJPyJl7Ls0n0QaEbM3u74i4i8eWtel-MTRrhlCKEbo
 
-###
-GET http://localhost:3000/
+PATCH http://localhost/user
 content-type: application/json
-Authorization: Bearer s..55kfTSJYFWYih63Zbe-iy6YbnH9bh1GDOypC2xCtXt0
-
-###
-# create a new user
-POST http://localhost:3000/signup
-content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjFNYXJrTmFtU2Vjb25kIiwic3ViIjo1LCJpYXQiOjE3MTQ0NDI2MTIsImV4cCI6MTcxNDQ0NDQxMn0.8zByccWADJoJKD7p5OTaxm7meJA8JULpCErxdLMAZH8
 
 {
-  "username": "1MarkNamSecondd",
-  "password": "1Nam14135647!",
-  "email": "ddydgh201111@gmail.com"
+  "id": 5,
+  "useㄴrname": "1MarkNamSecond"
 }
 
 ###
-
-# update a user
-
-###
-
-# check search jwt 
-GET http://localhost:3000/search?search=ramen+noddle
-content-type: application/json
-
-###
-POST http://localhost:3000/testing
+POST http://localhost/friend-test
 content-type: application/json
 
 {
-  "search": "ramen noddle"
+  "userId": 1,
+  "friendId": 3
 }
 
 ###
+GET http://localhost/auth/test/1
