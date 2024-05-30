@@ -96,6 +96,13 @@ jobs:
             ls
           '
 
+      - name: Run Image
+        run: |
+          set -e
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
+            sudo docker run -d -p 80:80 --name server d935fe513ace
+          '
+
       - name: Check If Container is Running
         run: |
           set -e
