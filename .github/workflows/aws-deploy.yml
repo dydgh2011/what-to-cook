@@ -24,9 +24,9 @@ jobs:
       - name: Connect to EC2 SSH
         run: |
           set -e
-          echo "${{EC2_KEY}}" > private_key && chmod 600 private_key
+          echo "${{secrets.EC2_KEY}}" > private_key && chmod 600 private_key
           ls
-          ssh -o StrictHostKeyChecking=no -i private_key ${{EC2_USER}}@${{EC2_HOST}} '
+          ssh -o StrictHostKeyChecking=no -i private_key ${{secrets.EC2_USER}}@${{secrets.EC2_HOST}} '
             ls
             pwd
             mkdir ${{secrets.DB_USERNAME}}
